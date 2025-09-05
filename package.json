@@ -1,0 +1,38 @@
+{
+  "name": "f1-ai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check-setup": "ts-node src/check-setup.ts",
+    "recreate-collection": "ts-node src/recreate-collection.ts",
+    "ingest": "ts-node src/guaranteed-f1.ts",
+    "team-analysis": "ts-node src/simple-team-query.ts",
+    "answer": "ts-node src/answer.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.882.0",
+    "@datastax/astra-db-ts": "^1.5.0",
+    "@huggingface/inference": "^4.7.1",
+    "@supabase/supabase-js": "^2.57.2",
+    "cassandra-driver": "^4.7.2",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.2.2",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "glob": "^11.0.3",
+    "langchain": "^0.3.6",
+    "natural": "^8.1.0",
+    "openai": "^4.76.0",
+    "playwright": "^1.49.0",
+    "ts-node": "^10.9.2"
+  }
+}
