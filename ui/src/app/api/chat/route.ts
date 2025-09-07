@@ -36,7 +36,7 @@ async function generateEmbedding(text: string): Promise<number[]> {
 
     return responseBody.embeddings[0];
   } catch (error) {
-    console.error("❌ Embedding generation failed:", error);
+    console.error("Embedding generation failed:", error);
     throw new Error("Failed to generate query embedding");
   }
 }
@@ -44,11 +44,11 @@ async function generateEmbedding(text: string): Promise<number[]> {
 // Search F1 documents using vector similarity
 async function searchF1Documents(query: string, limit: number = 5) {
   try {
-    console.log(`🔍 Searching for: "${query}"`);
+    console.log(`Searching for: "${query}"`);
 
     // Generate embedding for the query
     const embedding = await generateEmbedding(query);
-    console.log(`✅ Generated ${embedding.length}-dimensional embedding`);
+    console.log(`Generated ${embedding.length}-dimensional embedding`);
 
     // Search in Supabase using vector similarity
     const { data, error } = await supabase.rpc("search_f1_documents", {
@@ -58,14 +58,14 @@ async function searchF1Documents(query: string, limit: number = 5) {
     });
 
     if (error) {
-      console.error("❌ Database search error:", error);
+      console.error("Database search error:", error);
       throw new Error("Database search failed");
     }
 
-    console.log(`✅ Found ${data?.length || 0} results`);
+    console.log(`Found ${data?.length || 0} results`);
     return data || [];
   } catch (error) {
-    console.error("❌ Search failed:", error);
+    console.error("Search failed:", error);
     throw error;
   }
 }
@@ -79,10 +79,10 @@ async function generateAIResponse(
     const chatModel =
       process.env.BEDROCK_CHAT_MODEL ||
       "anthropic.claude-3-haiku-20240307-v1:0";
-    console.log(`🤖 Generating REAL AI response using ${chatModel}...`);
+    console.log(`Generating REAL AI response using ${chatModel}...`);
 
     const contextText = context.join("\n\n");
-    console.log(`📝 Context length: ${contextText.length} characters`);
+    console.log(`Context length: ${contextText.length} characters`);
 
     const command = new InvokeModelCommand({
       modelId: chatModel,
@@ -114,14 +114,14 @@ Provide a detailed F1 expert analysis. Include specific details about drivers, t
       responseBody.content[0].text
     ) {
       const aiText = responseBody.content[0].text;
-      console.log("✅ REAL AI response generated successfully");
-      console.log(`📊 Response length: ${aiText.length} characters`);
+      console.log("REAL AI response generated successfully");
+      console.log(`Response length: ${aiText.length} characters`);
       return aiText;
     } else {
       throw new Error("No text content in AI response");
     }
   } catch (error) {
-    console.error("❌ AI response generation failed:", error);
+    console.error("AI response generation failed:", error);
 
     // Provide a context-based fallback
     if (context.length > 0) {
@@ -133,7 +133,7 @@ Provide a detailed F1 expert analysis. Include specific details about drivers, t
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("🏎️ F1 Chat API - Processing REAL AI request...");
+    console.log("F1 Chat API - Processing REAL AI request...");
 
     // Parse request body
     const body = await request.json();
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`📝 Question: ${question}`);
+    console.log(`Question: ${question}`);
 
     // Search for relevant F1 documents
     const searchResults = await searchF1Documents(question, 5);
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       similarity: result.similarity || 0,
     }));
 
-    console.log(`📊 Found ${context.length} context documents`);
+    console.log(`Found ${context.length} context documents`);
 
     // Generate AI response
     let answer: string;
@@ -173,9 +173,9 @@ export async function POST(request: NextRequest) {
     if (process.env.USE_BEDROCK_CHAT === "true") {
       try {
         answer = await generateAIResponse(question, context);
-        console.log("✅ REAL AI response generated successfully");
+        console.log("REAL AI response generated successfully");
       } catch (aiError) {
-        console.error("⚠️ AI generation failed, using fallback:", aiError);
+        console.error("AI generation failed, using fallback:", aiError);
         // Fallback response
         if (context.length > 0) {
           answer = `Based on the F1 data: ${context.slice(0, 2).join(" ")} ${sources.length > 0 ? `Found ${sources.length} relevant documents from the F1 database.` : ""}`;
@@ -207,10 +207,10 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    console.log("✅ F1 Chat response generated successfully with REAL AI");
+    console.log("F1 Chat response generated successfully with REAL AI");
     return NextResponse.json(response);
   } catch (error) {
-    console.error("❌ Chat API error:", error);
+    console.error("Chat API error:", error);
 
     return NextResponse.json(
       {
