@@ -1,153 +1,360 @@
-// Supabase Integration for Formula 1 Data Management
-// Optional alternative to DataStax Astra DB for better data management
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
+import { config, getDatabaseConfig, isSupabaseConfigured } from "./config";
+import {
+  F1Document,
+  F1DocumentSchema,
+  DatabaseQuery,
+  DatabaseQuerySchema,
+  validateF1Document,
+  safeValidateF1Document,
+} from "./schemas";
 
-import { createClient } from '@supabase/supabase-js';
+// Supabase Database Schema
+const SupabaseF1DocumentSchema = z.object({
+  id: z.string().uuid(),
+  text: z.string(),
+  embedding: z.array(z.number()).length(1024),
+  source: z.string(),
+  category: z.string(),
+  season: z.string(),
+  track: z.string().nullable(),
+  driver: z.string().nullable(),
+  team: z.string().nullable(),
+  constructor: z.string().nullable(),
+  position: z.number().nullable(),
+  points: z.number().nullable(),
+  metadata: z.record(z.any()).nullable(),
+  created_at: z.string(),
+});
 
-// Supabase configuration
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+// Search result schema
+const SearchResultSchema = z.object({
+  id: z.string().uuid(),
+  text: z.string(),
+  source: z.string(),
+  category: z.string(),
+  season: z.string(),
+  track: z.string().nullable(),
+  driver: z.string().nullable(),
+  team: z.string().nullable(),
+  constructor: z.string().nullable(),
+  metadata: z.record(z.any()).nullable(),
+  similarity: z.number(),
+});
 
-// Initialize Supabase client only if credentials are provided
-export const supabase = supabaseUrl && supabaseKey 
-  ? createClient(supabaseUrl, supabaseKey)
-  : null;
+type SupabaseF1Document = z.infer<typeof SupabaseF1DocumentSchema>;
+type SearchResult = z.infer<typeof SearchResultSchema>;
 
-// Database schema for F1 data
-export interface F1Document {
-  id?: string;
-  text: string;
-  embedding: number[];
-  source: string;
-  category: string;
-  season: string;
-  track?: string;
-  driver?: string;
-  team?: string;
-  metadata?: any;
-  created_at?: string;
+// Initialize Supabase client
+let supabase: SupabaseClient | null = null;
+
+function initializeSupabase(): SupabaseClient {
+  if (!supabase && isSupabaseConfigured()) {
+    const dbConfig = getDatabaseConfig();
+    if (dbConfig.type === "supabase") {
+      supabase = createClient(dbConfig.url, dbConfig.anonKey);
+      console.log("✅ Supabase client initialized");
+    }
+  }
+
+  if (!supabase) {
+    throw new Error(
+      "Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY environment variables.",
+    );
+  }
+
+  return supabase;
 }
 
-// Initialize Supabase tables
-export async function initializeSupabaseTables() {
-  if (!supabase) {
-    console.log('Supabase not configured, skipping table initialization');
-    return;
-  }
-  
-  console.log('Initializing Supabase tables for F1 data...');
-  
-  // Create the f1_documents table with vector support
-  const { error: tableError } = await supabase.rpc('create_f1_documents_table');
-  
-  if (tableError && !tableError.message.includes('already exists')) {
-    console.error('Error creating table:', tableError);
-    throw tableError;
-  }
-  
-  console.log('Supabase tables initialized');
+// Get Supabase client
+export function getSupabaseClient(): SupabaseClient {
+  return initializeSupabase();
 }
 
-// Insert F1 documents with vector embeddings
-export async function insertF1Documents(documents: F1Document[]) {
-  if (!supabase) {
-    console.log('Supabase not configured, skipping document insertion');
+// Check if Supabase is available
+export function isSupabaseAvailable(): boolean {
+  try {
+    return isSupabaseConfigured() && !!getSupabaseClient();
+  } catch {
+    return false;
+  }
+}
+
+// Database initialization
+export async function initializeDatabase(): Promise<void> {
+  if (!isSupabaseAvailable()) {
+    console.log("⚠️ Supabase not configured, skipping database initialization");
     return;
   }
-  
-  console.log(`Inserting ${documents.length} documents into Supabase...`);
-  
-  const { data, error } = await supabase
-    .from('f1_documents')
-    .insert(documents);
-  
-  if (error) {
-    console.error('Error inserting documents:', error);
+
+  const client = getSupabaseClient();
+
+  try {
+    console.log("🔄 Initializing Supabase database...");
+
+    // Check if the f1_documents table exists
+    const { data: tables, error: tablesError } = await client
+      .from("f1_documents")
+      .select("id")
+      .limit(1);
+
+    if (tablesError && tablesError.code === "42P01") {
+      console.log("📝 Creating f1_documents table...");
+      console.log("Please run the SQL setup in your Supabase dashboard:");
+      console.log(getSQLSetup());
+      throw new Error(
+        "Database tables not found. Please run the SQL setup first.",
+      );
+    }
+
+    console.log("✅ Database initialized successfully");
+  } catch (error) {
+    console.error("❌ Database initialization failed:", error);
     throw error;
   }
-  
-  console.log(`Successfully inserted ${documents.length} documents`);
-  return data;
+}
+
+// Insert F1 documents with validation
+export async function insertF1Documents(
+  documents: F1Document[],
+): Promise<SupabaseF1Document[]> {
+  if (!isSupabaseAvailable()) {
+    throw new Error("Supabase not available");
+  }
+
+  const client = getSupabaseClient();
+
+  // Validate all documents first
+  const validatedDocuments: F1Document[] = [];
+  const errors: string[] = [];
+
+  for (let i = 0; i < documents.length; i++) {
+    const result = safeValidateF1Document(documents[i]);
+    if (result.success) {
+      validatedDocuments.push(result.data);
+    } else {
+      errors.push(
+        `Document ${i}: ${result.error.errors.map((e) => e.message).join(", ")}`,
+      );
+    }
+  }
+
+  if (errors.length > 0) {
+    console.warn("⚠️ Validation errors:", errors);
+    if (validatedDocuments.length === 0) {
+      throw new Error(`All documents failed validation: ${errors.join("; ")}`);
+    }
+  }
+
+  console.log(
+    `📝 Inserting ${validatedDocuments.length} validated documents...`,
+  );
+
+  // Transform for Supabase insertion
+  const supabaseDocuments = validatedDocuments.map((doc) => ({
+    text: doc.text,
+    embedding: doc.embedding,
+    source: doc.source,
+    category: doc.category,
+    season: doc.season,
+    track: doc.track || null,
+    driver: doc.driver || null,
+    team: doc.team || null,
+    constructor: doc.constructor || null,
+    position: doc.position || null,
+    points: doc.points || null,
+    metadata: doc.metadata || null,
+  }));
+
+  const { data, error } = await client
+    .from("f1_documents")
+    .insert(supabaseDocuments)
+    .select();
+
+  if (error) {
+    console.error("❌ Error inserting documents:", error);
+    throw new Error(`Failed to insert documents: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error("No data returned from insert operation");
+  }
+
+  // Validate returned data
+  const validatedResults = data.map((doc) =>
+    SupabaseF1DocumentSchema.parse(doc),
+  );
+
+  console.log(`✅ Successfully inserted ${validatedResults.length} documents`);
+  return validatedResults;
 }
 
 // Search F1 documents using vector similarity
-export async function searchF1Documents(queryEmbedding: number[], limit: number = 10) {
-  if (!supabase) {
-    console.log('Supabase not configured, cannot search documents');
+export async function searchF1Documents(
+  queryData: DatabaseQuery,
+): Promise<SearchResult[]> {
+  if (!isSupabaseAvailable()) {
+    throw new Error("Supabase not available");
+  }
+
+  // Validate query
+  const validatedQuery = DatabaseQuerySchema.parse(queryData);
+  const client = getSupabaseClient();
+
+  console.log(
+    `🔍 Searching for: "${validatedQuery.query}" (limit: ${validatedQuery.limit})`,
+  );
+
+  try {
+    const { data, error } = await client.rpc("search_f1_documents", {
+      query_embedding: validatedQuery.embedding,
+      match_threshold: validatedQuery.threshold,
+      match_count: validatedQuery.limit,
+      season_filter: validatedQuery.filters?.season || null,
+      category_filter: validatedQuery.filters?.category || null,
+      team_filter: validatedQuery.filters?.team || null,
+      driver_filter: validatedQuery.filters?.driver || null,
+    });
+
+    if (error) {
+      console.error("❌ Search error:", error);
+      throw new Error(`Search failed: ${error.message}`);
+    }
+
+    if (!data) {
+      console.log("ℹ️ No results found");
+      return [];
+    }
+
+    // Validate search results
+    const validatedResults = data.map((item: any) =>
+      SearchResultSchema.parse(item),
+    );
+
+    console.log(`✅ Found ${validatedResults.length} results`);
+    return validatedResults;
+  } catch (error) {
+    console.error("❌ Search operation failed:", error);
+    throw error;
+  }
+}
+
+// Get F1 documents by filters
+export async function getF1DocumentsByFilters(filters: {
+  category?: string;
+  season?: string;
+  team?: string;
+  driver?: string;
+  limit?: number;
+}): Promise<SupabaseF1Document[]> {
+  if (!isSupabaseAvailable()) {
+    throw new Error("Supabase not available");
+  }
+
+  const client = getSupabaseClient();
+  const limit = Math.min(filters.limit || 50, 100); // Max 100 results
+
+  let query = client.from("f1_documents").select("*").limit(limit);
+
+  if (filters.category) {
+    query = query.eq("category", filters.category);
+  }
+
+  if (filters.season) {
+    query = query.eq("season", filters.season);
+  }
+
+  if (filters.team) {
+    query = query.eq("team", filters.team);
+  }
+
+  if (filters.driver) {
+    query = query.eq("driver", filters.driver);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("❌ Error fetching documents:", error);
+    throw new Error(`Failed to fetch documents: ${error.message}`);
+  }
+
+  if (!data) {
     return [];
   }
-  
-  console.log('Searching F1 documents with vector similarity...');
-  
-  const { data, error } = await supabase.rpc('search_f1_documents', {
-    query_embedding: queryEmbedding,
-    match_threshold: 0.7,
-    match_count: limit
-  });
-  
-  if (error) {
-    console.error('Error searching documents:', error);
-    throw error;
-  }
-  
-  return data;
+
+  // Validate results
+  const validatedResults = data.map((doc) =>
+    SupabaseF1DocumentSchema.parse(doc),
+  );
+  return validatedResults;
 }
 
-// Get F1 documents by category
-export async function getF1DocumentsByCategory(category: string, limit: number = 50) {
-  if (!supabase) return [];
-  
-  const { data, error } = await supabase
-    .from('f1_documents')
-    .select('*')
-    .eq('category', category)
-    .limit(limit);
-  
-  if (error) {
-    console.error('Error fetching documents by category:', error);
-    throw error;
+// Get database statistics
+export async function getF1Statistics(): Promise<{
+  totalDocuments: number;
+  categories: string[];
+  seasons: string[];
+  sources: string[];
+  documentsByCategory: Record<string, number>;
+  documentsBySeason: Record<string, number>;
+}> {
+  if (!isSupabaseAvailable()) {
+    throw new Error("Supabase not available");
   }
-  
-  return data;
+
+  const client = getSupabaseClient();
+
+  const { data, error } = await client.rpc("get_f1_statistics");
+
+  if (error) {
+    console.error("❌ Error fetching statistics:", error);
+    throw new Error(`Failed to fetch statistics: ${error.message}`);
+  }
+
+  return (
+    data || {
+      totalDocuments: 0,
+      categories: [],
+      seasons: [],
+      sources: [],
+      documentsByCategory: {},
+      documentsBySeason: {},
+    }
+  );
 }
 
-// Get F1 documents by season
-export async function getF1DocumentsBySeason(season: string, limit: number = 50) {
-  if (!supabase) return [];
-  
-  const { data, error } = await supabase
-    .from('f1_documents')
-    .select('*')
-    .eq('season', season)
-    .limit(limit);
-  
-  if (error) {
-    console.error('Error fetching documents by season:', error);
-    throw error;
+// Delete all documents (for testing/reset)
+export async function clearAllDocuments(): Promise<void> {
+  if (!isSupabaseAvailable()) {
+    throw new Error("Supabase not available");
   }
-  
-  return data;
+
+  const client = getSupabaseClient();
+
+  console.log("🗑️ Clearing all F1 documents...");
+
+  const { error } = await client
+    .from("f1_documents")
+    .delete()
+    .neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all
+
+  if (error) {
+    console.error("❌ Error clearing documents:", error);
+    throw new Error(`Failed to clear documents: ${error.message}`);
+  }
+
+  console.log("✅ All documents cleared");
 }
 
-// Get F1 statistics
-export async function getF1Statistics() {
-  if (!supabase) return null;
-  
-  const { data, error } = await supabase.rpc('get_f1_statistics');
-  
-  if (error) {
-    console.error('Error fetching statistics:', error);
-    throw error;
-  }
-  
-  return data;
-}
-
-// SQL functions for Supabase (to be run in Supabase SQL editor)
-export const supabaseSQL = `
--- Enable the pgvector extension
+// Get SQL setup for Supabase
+export function getSQLSetup(): string {
+  return `
+-- Enable the pgvector extension for vector operations
 create extension if not exists vector;
 
--- Create the f1_documents table
+-- Create the f1_documents table with vector support
 create table if not exists f1_documents (
   id uuid default gen_random_uuid() primary key,
   text text not null,
@@ -158,6 +365,9 @@ create table if not exists f1_documents (
   track text,
   driver text,
   team text,
+  constructor text,
+  position integer,
+  points numeric,
   metadata jsonb,
   created_at timestamp with time zone default now()
 );
@@ -165,13 +375,19 @@ create table if not exists f1_documents (
 -- Create indexes for better performance
 create index if not exists f1_documents_category_idx on f1_documents (category);
 create index if not exists f1_documents_season_idx on f1_documents (season);
+create index if not exists f1_documents_team_idx on f1_documents (team);
+create index if not exists f1_documents_driver_idx on f1_documents (driver);
 create index if not exists f1_documents_embedding_idx on f1_documents using ivfflat (embedding vector_cosine_ops);
 
--- Function to search documents by vector similarity
+-- Function to search documents by vector similarity with filters
 create or replace function search_f1_documents(
   query_embedding vector(1024),
   match_threshold float default 0.7,
-  match_count int default 10
+  match_count int default 10,
+  season_filter text default null,
+  category_filter text default null,
+  team_filter text default null,
+  driver_filter text default null
 )
 returns table (
   id uuid,
@@ -182,6 +398,7 @@ returns table (
   track text,
   driver text,
   team text,
+  constructor text,
   metadata jsonb,
   similarity float
 )
@@ -196,10 +413,16 @@ as $$
     f1_documents.track,
     f1_documents.driver,
     f1_documents.team,
+    f1_documents.constructor,
     f1_documents.metadata,
     1 - (f1_documents.embedding <=> query_embedding) as similarity
   from f1_documents
-  where 1 - (f1_documents.embedding <=> query_embedding) > match_threshold
+  where
+    1 - (f1_documents.embedding <=> query_embedding) > match_threshold
+    and (season_filter is null or f1_documents.season = season_filter)
+    and (category_filter is null or f1_documents.category = category_filter)
+    and (team_filter is null or f1_documents.team = team_filter)
+    and (driver_filter is null or f1_documents.driver = driver_filter)
   order by f1_documents.embedding <=> query_embedding
   limit match_count;
 $$;
@@ -210,19 +433,29 @@ returns jsonb
 language sql stable
 as $$
   select jsonb_build_object(
-    'total_documents', count(*),
-    'categories', jsonb_agg(distinct category),
-    'seasons', jsonb_agg(distinct season order by season),
-    'sources', jsonb_agg(distinct source),
-    'documents_by_category', (
+    'totalDocuments', count(*),
+    'categories', (
+      select jsonb_agg(distinct category order by category)
+      from f1_documents
+    ),
+    'seasons', (
+      select jsonb_agg(distinct season order by season)
+      from f1_documents
+    ),
+    'sources', (
+      select jsonb_agg(distinct source order by source)
+      from f1_documents
+    ),
+    'documentsByCategory', (
       select jsonb_object_agg(category, count)
       from (
         select category, count(*) as count
         from f1_documents
         group by category
+        order by category
       ) t
     ),
-    'documents_by_season', (
+    'documentsBySeason', (
       select jsonb_object_agg(season, count)
       from (
         select season, count(*) as count
@@ -235,46 +468,79 @@ as $$
   from f1_documents;
 $$;
 
--- Function to create tables (for RPC call)
-create or replace function create_f1_documents_table()
-returns void
-language sql
-as $$
-  -- This function is just a placeholder for the RPC call
-  -- The actual table creation is handled above
-$$;
+-- Enable Row Level Security (RLS) for security
+alter table f1_documents enable row level security;
+
+-- Create policy to allow all operations for authenticated users
+create policy "Allow all operations for authenticated users" on f1_documents
+  for all using (auth.role() = 'authenticated');
+
+-- Create policy to allow read access for anonymous users
+create policy "Allow read access for anonymous users" on f1_documents
+  for select using (true);
 `;
+}
 
-// Example usage and migration from DataStax
-export async function migrateToSupabase() {
-  console.log('Starting migration to Supabase...');
-  
+// Health check
+export async function healthCheck(): Promise<{
+  status: "healthy" | "unhealthy";
+  details: {
+    supabaseConfigured: boolean;
+    connectionWorking: boolean;
+    tablesExist: boolean;
+    documentsCount: number;
+    error?: string;
+  };
+}> {
+  const details = {
+    supabaseConfigured: isSupabaseConfigured(),
+    connectionWorking: false,
+    tablesExist: false,
+    documentsCount: 0,
+    error: undefined as string | undefined,
+  };
+
+  if (!details.supabaseConfigured) {
+    details.error = "Supabase not configured";
+    return { status: "unhealthy", details };
+  }
+
   try {
-    // Initialize tables
-    await initializeSupabaseTables();
-    
-    console.log('Supabase setup complete!');
-    console.log('\nTo complete setup:');
-    console.log('1. Copy the SQL from supabaseSQL export into your Supabase SQL editor');
-    console.log('2. Add SUPABASE_URL and SUPABASE_ANON_KEY to your .env file');
-    console.log('3. Update your ingestion script to use Supabase functions');
-    
+    const client = getSupabaseClient();
+
+    // Test connection
+    const { data: testData, error: testError } = await client
+      .from("f1_documents")
+      .select("id")
+      .limit(1);
+
+    if (testError) {
+      if (testError.code === "42P01") {
+        details.error = "Tables do not exist";
+      } else {
+        details.error = testError.message;
+      }
+      return { status: "unhealthy", details };
+    }
+
+    details.connectionWorking = true;
+    details.tablesExist = true;
+
+    // Get document count
+    const { count, error: countError } = await client
+      .from("f1_documents")
+      .select("*", { count: "exact", head: true });
+
+    if (!countError && count !== null) {
+      details.documentsCount = count;
+    }
+
+    return { status: "healthy", details };
   } catch (error) {
-    console.error('Migration failed:', error);
+    details.error = error instanceof Error ? error.message : String(error);
+    return { status: "unhealthy", details };
   }
 }
 
-// Hybrid approach: Use both DataStax and Supabase
-export async function insertToSupabase(documents: F1Document[]) {
-  if (!supabase) {
-    console.log('Supabase not configured, skipping Supabase insertion');
-    return;
-  }
-  
-  try {
-    await insertF1Documents(documents);
-    console.log('Documents also saved to Supabase');
-  } catch (error) {
-    console.error('Failed to save to Supabase:', error);
-  }
-}
+// Export types
+export type { SupabaseF1Document, SearchResult };
