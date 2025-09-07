@@ -1,109 +1,407 @@
-// Generate vector embeddings using AWS Bedrock Cohere and chat completions with fallback
+import { z } from "zod";
+import {
+  BedrockRuntimeClient,
+  InvokeModelCommand,
+} from "@aws-sdk/client-bedrock-runtime";
+import { config, getBedrockConfig } from "./config";
+import {
+  EmbeddingRequest,
+  EmbeddingRequestSchema,
+  EmbeddingResponse,
+  EmbeddingResponseSchema,
+} from "./schemas";
 
-import * as dotenv from 'dotenv';
-import OpenAI from 'openai';
-import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
-
-// Load environment variables
-dotenv.config();
-
-// AWS Bedrock client for embeddings
+// Initialize AWS Bedrock client
+const bedrockConfig = getBedrockConfig();
 const bedrockClient = new BedrockRuntimeClient({
-  region: process.env.AWS_REGION || 'ap-southeast-1', // Singapore region
-  // Will attempt to use credentials from environment variables, shared credentials file, or IAM roles
+  region: bedrockConfig.region,
+  credentials: {
+    accessKeyId: bedrockConfig.accessKeyId,
+    secretAccessKey: bedrockConfig.secretAccessKey,
+  },
 });
 
-// OpenRouter client as fallback for chat completions
-const openrouterClient = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: 'https://openrouter.ai/api/v1',
-  defaultHeaders: {
-    'HTTP-Referer': 'http://localhost:3000',
-    'X-Title': 'F1 RAG AI'
-  }
+// Bedrock model configurations
+const MODELS = {
+  EMBEDDING: {
+    COHERE_V3: "cohere.embed-english-v3",
+    COHERE_MULTILINGUAL: "cohere.embed-multilingual-v3",
+    TITAN_V1: "amazon.titan-embed-text-v1",
+    TITAN_V2: "amazon.titan-embed-text-v2:0",
+  },
+  CHAT: {
+    CLAUDE_3_SONNET: "anthropic.claude-3-sonnet-20240229-v1:0",
+    CLAUDE_3_HAIKU: "anthropic.claude-3-haiku-20240307-v1:0",
+    CLAUDE_3_5_SONNET: "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    LLAMA_3_1_8B: "meta.llama3-1-8b-instruct-v1:0",
+    LLAMA_3_1_70B: "meta.llama3-1-70b-instruct-v1:0",
+  },
+} as const;
+
+// Chat request schema
+const ChatRequestSchema = z.object({
+  question: z.string().min(1, "Question is required"),
+  context: z.array(z.string()).optional(),
+  model: z.string().optional(),
+  temperature: z.number().min(0).max(2).default(0.3),
+  maxTokens: z.number().int().positive().max(4096).default(1000),
 });
 
-// Generate embeddings using AWS Bedrock Cohere Embed English V3
-export async function generateEmbedding(text: string) {
+const ChatResponseSchema = z.object({
+  response: z.string(),
+  model: z.string(),
+  usage: z
+    .object({
+      inputTokens: z.number().optional(),
+      outputTokens: z.number().optional(),
+      totalTokens: z.number().optional(),
+    })
+    .optional(),
+});
+
+type ChatRequest = z.infer<typeof ChatRequestSchema>;
+type ChatResponse = z.infer<typeof ChatResponseSchema>;
+
+// Generate embeddings using AWS Bedrock
+export async function generateEmbedding(
+  text: string,
+  options: Partial<EmbeddingRequest> = {},
+): Promise<EmbeddingResponse> {
   try {
-    console.log('Generating AWS Bedrock Cohere embedding...');
-    
+    // Validate input
+    const validatedRequest = EmbeddingRequestSchema.parse({
+      text,
+      ...options,
+    });
+
+    console.log(
+      `🧠 Generating embedding using ${bedrockConfig.embeddingModel}...`,
+    );
+
+    let modelBody: any;
+    let responseParser: (response: any) => number[];
+
+    switch (bedrockConfig.embeddingModel) {
+      case MODELS.EMBEDDING.COHERE_V3:
+      case MODELS.EMBEDDING.COHERE_MULTILINGUAL:
+        modelBody = {
+          texts: [validatedRequest.text],
+          input_type: validatedRequest.inputType,
+        };
+        responseParser = (response) => response.embeddings[0];
+        break;
+
+      case MODELS.EMBEDDING.TITAN_V1:
+      case MODELS.EMBEDDING.TITAN_V2:
+        modelBody = {
+          inputText: validatedRequest.text,
+        };
+        responseParser = (response) => response.embedding;
+        break;
+
+      default:
+        throw new Error(
+          `Unsupported embedding model: ${bedrockConfig.embeddingModel}`,
+        );
+    }
+
     const command = new InvokeModelCommand({
-      modelId: 'cohere.embed-english-v3',
-      body: JSON.stringify({
-        texts: [text],
-        input_type: 'search_document'
-      })
+      modelId: bedrockConfig.embeddingModel,
+      body: JSON.stringify(modelBody),
+      contentType: "application/json",
+      accept: "application/json",
     });
 
     const response = await bedrockClient.send(command);
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-    
-    // Return in OpenAI format for compatibility
-    return {
-      data: [{
-        embedding: responseBody.embeddings[0]
-      }]
-    };
-  } catch (error) {
-    console.error('AWS Bedrock Cohere embedding error:', error);
-    throw new Error(`Failed to generate embedding: ${error.message}`);
-  }
-}
 
-export async function generateResponse(question: string, context: string[]) {
-  try {
-    // Try Bedrock first if configured
-    if (process.env.BEDROCK_CHAT_MODEL && process.env.USE_BEDROCK_CHAT === 'true') {
-      console.log('Attempting Bedrock chat completion...');
-      const prompt = `You are an expert in Formula 1 racing.
-You need to answer this question using the context provided.
-Do not mention that you have been provided with the context.
+    const embedding = responseParser(responseBody);
 
-Context: ${context.join('\n\n')}
-
-QUESTION: ${question}`;
-
-      const command = new InvokeModelCommand({
-        modelId: process.env.BEDROCK_CHAT_MODEL,
-        body: JSON.stringify({
-          anthropic_version: "bedrock-2023-05-31",
-          max_tokens: 500,
-          temperature: 0.3,
-          messages: [
-            {
-              role: "user",
-              content: prompt
-            }
-          ]
-        })
-      });
-
-      const response = await bedrockClient.send(command);
-      const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-      
-      return responseBody.content[0].text;
+    if (!Array.isArray(embedding) || embedding.length === 0) {
+      throw new Error("Invalid embedding response format");
     }
+
+    // Validate and return in OpenAI-compatible format
+    const result: EmbeddingResponse = {
+      data: [
+        {
+          embedding,
+          index: 0,
+        },
+      ],
+      model: bedrockConfig.embeddingModel,
+      usage: {
+        prompt_tokens: Math.ceil(validatedRequest.text.length / 4),
+        total_tokens: Math.ceil(validatedRequest.text.length / 4),
+      },
+    };
+
+    const validatedResponse = EmbeddingResponseSchema.parse(result);
+    console.log(`✅ Generated ${embedding.length}-dimensional embedding`);
+
+    return validatedResponse;
   } catch (error) {
-    console.warn('Bedrock chat failed, falling back to OpenRouter:', error.message);
+    console.error("❌ Embedding generation failed:", error);
+
+    if (error instanceof z.ZodError) {
+      throw new Error(
+        `Validation error: ${error.errors.map((e) => e.message).join(", ")}`,
+      );
+    }
+
+    if (error instanceof Error) {
+      throw new Error(`Failed to generate embedding: ${error.message}`);
+    }
+
+    throw new Error("Unknown embedding generation error");
+  }
+}
+
+// Generate chat response using AWS Bedrock
+export async function generateResponse(
+  question: string,
+  context: string[] = [],
+  options: Partial<ChatRequest> = {},
+): Promise<string> {
+  try {
+    // Validate input
+    const validatedRequest = ChatRequestSchema.parse({
+      question,
+      context,
+      ...options,
+    });
+
+    const model = validatedRequest.model || bedrockConfig.chatModel;
+
+    console.log(`💬 Generating response using ${model}...`);
+
+    // Prepare the prompt
+    const systemPrompt = `You are an expert Formula 1 analyst with comprehensive knowledge of F1 racing, drivers, teams, regulations, and history.
+
+You provide accurate, detailed, and engaging responses about Formula 1 topics. Always base your answers on the provided context when available, but don't explicitly mention that you're using provided context.
+
+Your responses should be:
+- Factual and accurate
+- Engaging and informative
+- Well-structured and easy to read
+- Focused on the specific question asked`;
+
+    const contextText =
+      validatedRequest.context && validatedRequest.context.length > 0
+        ? `\n\nRelevant F1 Information:\n${validatedRequest.context.join("\n\n")}`
+        : "";
+
+    const userPrompt = `${validatedRequest.question}${contextText}`;
+
+    let modelBody: any;
+    let responseParser: (response: any) => string;
+
+    if (model.startsWith("anthropic.claude")) {
+      // Claude models
+      modelBody = {
+        anthropic_version: "bedrock-2023-05-31",
+        max_tokens: validatedRequest.maxTokens,
+        temperature: validatedRequest.temperature,
+        system: systemPrompt,
+        messages: [
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+      };
+      responseParser = (response) => response.content[0].text;
+    } else if (model.startsWith("meta.llama")) {
+      // Llama models
+      const combinedPrompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+${systemPrompt}<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+${userPrompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+`;
+
+      modelBody = {
+        prompt: combinedPrompt,
+        max_gen_len: validatedRequest.maxTokens,
+        temperature: validatedRequest.temperature,
+        top_p: 0.9,
+      };
+      responseParser = (response) => response.generation;
+    } else {
+      throw new Error(`Unsupported chat model: ${model}`);
+    }
+
+    const command = new InvokeModelCommand({
+      modelId: model,
+      body: JSON.stringify(modelBody),
+      contentType: "application/json",
+      accept: "application/json",
+    });
+
+    const response = await bedrockClient.send(command);
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+
+    const generatedText = responseParser(responseBody);
+
+    if (!generatedText || typeof generatedText !== "string") {
+      throw new Error("Invalid response format from chat model");
+    }
+
+    console.log(`✅ Generated response (${generatedText.length} characters)`);
+    return generatedText.trim();
+  } catch (error) {
+    console.error("❌ Chat generation failed:", error);
+
+    if (error instanceof z.ZodError) {
+      throw new Error(
+        `Validation error: ${error.errors.map((e) => e.message).join(", ")}`,
+      );
+    }
+
+    if (error instanceof Error) {
+      throw new Error(`Failed to generate response: ${error.message}`);
+    }
+
+    throw new Error("Unknown chat generation error");
+  }
+}
+
+// Generate embeddings in batches for better performance
+export async function generateBatchEmbeddings(
+  texts: string[],
+  batchSize: number = 5,
+  options: Partial<EmbeddingRequest> = {},
+): Promise<EmbeddingResponse[]> {
+  if (texts.length === 0) {
+    return [];
   }
 
-  // Fallback to OpenRouter
-  console.log('Using OpenRouter for chat completion...');
-  const response = await openrouterClient.chat.completions.create({
-    model: "openai/gpt-4o-mini",
-    messages: [{
-      role: "user",
-      content: `You are an expert in Formula 1 racing.
-      You need to answer this question using the context provided.
-      Do not mention that you have been provided with the context.
-      
-      Context: ${context.join('\n\n')}
-      
-      QUESTION: ${question}.
-      `
-    }]
-  });
+  console.log(
+    `🔄 Generating embeddings for ${texts.length} texts in batches of ${batchSize}...`,
+  );
 
-  return response.choices[0].message.content;
+  const results: EmbeddingResponse[] = [];
+  const errors: string[] = [];
+
+  for (let i = 0; i < texts.length; i += batchSize) {
+    const batch = texts.slice(i, i + batchSize);
+    console.log(
+      `   Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(texts.length / batchSize)}`,
+    );
+
+    // Process batch items concurrently but with delay to avoid rate limits
+    const batchPromises = batch.map(async (text, index) => {
+      try {
+        // Add small delay to avoid rate limiting
+        await new Promise((resolve) => setTimeout(resolve, index * 100));
+        return await generateEmbedding(text, options);
+      } catch (error) {
+        const errorMsg = `Text ${i + index}: ${error instanceof Error ? error.message : String(error)}`;
+        errors.push(errorMsg);
+        console.warn(`⚠️ ${errorMsg}`);
+        return null;
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    results.push(
+      ...batchResults.filter(
+        (result): result is EmbeddingResponse => result !== null,
+      ),
+    );
+
+    // Add delay between batches
+    if (i + batchSize < texts.length) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
+  if (errors.length > 0) {
+    console.warn(`⚠️ ${errors.length} embeddings failed:`, errors);
+  }
+
+  console.log(
+    `✅ Successfully generated ${results.length}/${texts.length} embeddings`,
+  );
+  return results;
 }
+
+// Test Bedrock connection
+export async function testBedrockConnection(): Promise<{
+  status: "healthy" | "unhealthy";
+  details: {
+    embeddingModel: string;
+    chatModel: string;
+    embeddingTest: boolean;
+    chatTest: boolean;
+    error?: string;
+  };
+}> {
+  const details = {
+    embeddingModel: bedrockConfig.embeddingModel,
+    chatModel: bedrockConfig.chatModel,
+    embeddingTest: false,
+    chatTest: false,
+    error: undefined as string | undefined,
+  };
+
+  try {
+    console.log("🔍 Testing Bedrock connection...");
+
+    // Test embedding generation
+    try {
+      const embeddingResult = await generateEmbedding(
+        "Test embedding generation",
+      );
+      details.embeddingTest = embeddingResult.data[0].embedding.length > 0;
+      console.log("✅ Embedding test passed");
+    } catch (error) {
+      console.warn("⚠️ Embedding test failed:", error);
+      details.error = `Embedding: ${error instanceof Error ? error.message : String(error)}`;
+    }
+
+    // Test chat generation
+    try {
+      const chatResult = await generateResponse("What is Formula 1?", [], {
+        maxTokens: 50,
+      });
+      details.chatTest = chatResult.length > 0;
+      console.log("✅ Chat test passed");
+    } catch (error) {
+      console.warn("⚠️ Chat test failed:", error);
+      const chatError = `Chat: ${error instanceof Error ? error.message : String(error)}`;
+      details.error = details.error
+        ? `${details.error}; ${chatError}`
+        : chatError;
+    }
+
+    const status =
+      details.embeddingTest && details.chatTest ? "healthy" : "unhealthy";
+    console.log(
+      `${status === "healthy" ? "✅" : "❌"} Bedrock connection test ${status}`,
+    );
+
+    return { status, details };
+  } catch (error) {
+    details.error = error instanceof Error ? error.message : String(error);
+    console.error("❌ Bedrock connection test failed:", details.error);
+    return { status: "unhealthy", details };
+  }
+}
+
+// Get available models
+export function getAvailableModels() {
+  return {
+    embedding: Object.values(MODELS.EMBEDDING),
+    chat: Object.values(MODELS.CHAT),
+    current: {
+      embedding: bedrockConfig.embeddingModel,
+      chat: bedrockConfig.chatModel,
+    },
+  };
+}
+
+// Export types and models
+export type { ChatRequest, ChatResponse };
+export { MODELS };
