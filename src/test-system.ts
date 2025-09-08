@@ -25,7 +25,7 @@ class F1SystemTester {
     const startTime = Date.now();
 
     try {
-      console.log(`🧪 Testing: ${name}`);
+      console.log(`Testing: ${name}`);
       await testFn();
 
       const duration = Date.now() - startTime;
@@ -35,7 +35,7 @@ class F1SystemTester {
         message: "Test passed successfully",
         duration,
       });
-      console.log(`   ✅ Passed (${duration}ms)`);
+      console.log(`   Passed (${duration}ms)`);
     } catch (error) {
       const duration = Date.now() - startTime;
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -47,7 +47,7 @@ class F1SystemTester {
         duration,
         error: errorMsg,
       });
-      console.log(`   ❌ Failed: ${errorMsg} (${duration}ms)`);
+      console.log(`   Failed: ${errorMsg} (${duration}ms)`);
     }
   }
 
@@ -271,7 +271,7 @@ class F1SystemTester {
     failed: number;
     skipped: number;
   }> {
-    console.log("🏎️ F1 RAG AI System Test Suite\n");
+    console.log("F1 RAG AI System Test Suite\n");
     console.log("=" + "=".repeat(50));
 
     await this.testConfiguration();
@@ -284,7 +284,7 @@ class F1SystemTester {
 
     // Print summary
     console.log("\n" + "=" + "=".repeat(50));
-    console.log("📊 Test Summary");
+    console.log("Test Summary");
     console.log("=" + "=".repeat(50));
 
     const passed = this.results.filter((r) => r.status === "pass").length;
@@ -293,15 +293,15 @@ class F1SystemTester {
     const total = this.results.length;
 
     console.log(`Total Tests: ${total}`);
-    console.log(`✅ Passed: ${passed}`);
-    console.log(`❌ Failed: ${failed}`);
-    console.log(`⏭️  Skipped: ${skipped}`);
+    console.log(`Passed: ${passed}`);
+    console.log(`Failed: ${failed}`);
+    console.log(`Skipped: ${skipped}`);
 
     const totalDuration = this.results.reduce((sum, r) => sum + r.duration, 0);
     console.log(`⏱️  Total Duration: ${totalDuration}ms`);
 
     if (failed > 0) {
-      console.log("\n❌ Failed Tests:");
+      console.log("\nFailed Tests:");
       this.results
         .filter((r) => r.status === "fail")
         .forEach((result) => {
@@ -312,9 +312,9 @@ class F1SystemTester {
     console.log("\n" + "=" + "=".repeat(50));
 
     if (failed === 0) {
-      console.log("🎉 All tests passed! System is working correctly.");
+      console.log("All tests passed! System is working correctly.");
     } else {
-      console.log("⚠️ Some tests failed. Please check the errors above.");
+      console.log("Some tests failed. Please check the errors above.");
     }
 
     return { total, passed, failed, skipped };
@@ -330,7 +330,7 @@ async function main() {
     // Exit with appropriate code
     process.exit(summary.failed > 0 ? 1 : 0);
   } catch (error) {
-    console.error("\n❌ Test suite failed to run:", error);
+    console.error("\nTest suite failed to run:", error);
     process.exit(1);
   }
 }
