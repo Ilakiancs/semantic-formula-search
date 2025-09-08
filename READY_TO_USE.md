@@ -1,32 +1,32 @@
-# 🏎️ F1 RAG AI Cloud - Ready to Use!
+# F1 RAG AI Cloud - Ready to Use!
 
-## 🎉 CONGRATULATIONS! Your System is 95% Complete
+## CONGRATULATIONS! Your System is 95% Complete
 
-### ✅ What's Working Perfectly
+### What's Working Perfectly
 
-- **🗄️ Supabase Database**: Fully configured and connected
+- **Supabase Database**: Fully configured and connected
   - URL: https://ukygqtisuqpyxfadqdkk.supabase.co
   - Tables created with vector support (1024-dim embeddings)
   - Search functions and indexes installed
   - pgvector extension enabled
 
-- **🧠 AWS Bedrock Embeddings**: Working flawlessly
+- **AWS Bedrock Embeddings**: Working flawlessly
   - Cohere embed-english-v3 model operational
   - Successfully generating 1024-dimensional vectors
   - Processed 50 F1 documents with embeddings
 
-- **📊 F1 Data**: Comprehensive dataset ready
+- **F1 Data**: Comprehensive dataset ready
   - 40+ CSV files (2019-2025 seasons)
   - Drivers, teams, race results, qualifying data
   - 50 documents processed with embeddings generated
 
-- **💻 Codebase**: Production-ready
+- **Codebase**: Production-ready
   - Zod validation throughout
   - TypeScript with full type safety
   - Next.js 15 UI with glassmorphism design
   - Error handling and health monitoring
 
-### 🚧 One Small Fix Needed (2 minutes)
+### One Small Fix Needed (2 minutes)
 
 **Issue**: Row Level Security (RLS) preventing data insertion
 
@@ -39,7 +39,7 @@ ALTER TABLE f1_documents DISABLE ROW LEVEL SECURITY;
 3. Click "Run"
 4. Then run: `node simple-ingest.js`
 
-### 🚀 Final Steps (5 minutes total)
+### Final Steps (5 minutes total)
 
 ```bash
 # 1. Fix RLS in Supabase (run SQL above)
@@ -54,7 +54,7 @@ npm run check-setup
 cd ui && npm run dev
 ```
 
-### 🎯 What You'll Have
+### What You'll Have
 
 **Vector Search System**:
 - Ask: "Who won the 2024 F1 championship?"
@@ -72,34 +72,34 @@ cd ui && npm run dev
 - Cloud-native with AWS + Supabase
 - Beautiful React UI
 
-### 📊 Current Status
+### Current Status
 
 ```
-✅ Database: Connected & configured
-✅ AWS Bedrock: Embeddings working
-✅ F1 Data: 50 documents processed  
-✅ UI: Next.js 15 ready to launch
-✅ Validation: Zod schemas active
-⚠️ RLS: Needs 1-line SQL fix
+Database: Connected & configured
+AWS Bedrock: Embeddings working
+F1 Data: 50 documents processed  
+UI: Next.js 15 ready to launch
+Validation: Zod schemas active
+RLS: Needs 1-line SQL fix
 ```
 
-### 🧪 Test Results
+### Test Results
 
-**Embeddings Generated**: ✅ 50/50 successful
+**Embeddings Generated**: 50/50 successful
 ```
 Max Verstappen is a Formula 1 driver racing for Red Bull Racing...
 Lewis Hamilton is a British Formula 1 driver who has won seven...
 Red Bull Racing is an Austrian Formula 1 team based in Milton...
 ```
 
-**Database Connection**: ✅ Operational
+**Database Connection**: Operational
 ```
-✅ Tables exist and accessible
-✅ Functions properly installed
-✅ Vector indexes created
+Tables exist and accessible
+Functions properly installed
+Vector indexes created
 ```
 
-### 💡 Example Questions
+### Example Questions
 
 Once running, try these:
 - "Compare Red Bull vs McLaren 2024 performance"
@@ -107,7 +107,7 @@ Once running, try these:
 - "What were Max Verstappen's 2024 results?"
 - "Show me Ferrari's championship standings"
 
-### 🔧 Technical Details
+### Technical Details
 
 **Database**: Supabase PostgreSQL with pgvector
 - f1_documents table with 1024-dim vector column
@@ -125,7 +125,7 @@ Once running, try these:
 - Real-time chat interface
 - Source attribution display
 
-### 🆘 If You Need Help
+### If You Need Help
 
 **Common Issues**:
 - RLS errors → Run the SQL disable command
@@ -139,7 +139,7 @@ npm run test-system    # Component testing
 node test-supabase.js  # Database connection test
 ```
 
-### 🎊 You're Almost There!
+### You're Almost There!
 
 Your F1 RAG AI system is incredibly close to being fully operational. The hardest parts (AWS integration, vector database setup, data processing) are all working perfectly.
 
@@ -147,4 +147,4 @@ Just run that one SQL command to disable RLS, load the data, and you'll have a p
 
 **Total time remaining: ~5 minutes**
 
-🏁 **Ready to race with AI-powered F1 insights!** 🏁
+**Ready to race with AI-powered F1 insights!**
