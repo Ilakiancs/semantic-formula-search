@@ -63,14 +63,14 @@ async function searchF1Documents(
     });
 
     if (error) {
-      console.error("❌ Search error:", error);
+      console.error("Search error:", error);
       return [];
     }
 
-    console.log(`✅ Found ${data?.length || 0} results`);
+    console.log(`Found ${data?.length || 0} results`);
     return data || [];
   } catch (error) {
-    console.error("❌ Error in search:", error);
+    console.error("Error in search:", error);
     return [];
   }
 }
@@ -84,7 +84,7 @@ async function getDatabaseStats(): Promise<void> {
     const { data: stats, error } = await supabase.rpc("get_f1_statistics");
 
     if (error) {
-      console.error("❌ Error getting stats:", error);
+      console.error("Error getting stats:", error);
       return;
     }
 
@@ -105,9 +105,8 @@ async function getDatabaseStats(): Promise<void> {
         console.log(`   ${season}: ${count}`);
       });
     }
-
   } catch (error) {
-    console.error("❌ Error getting database statistics:", error);
+    console.error("Error getting database statistics:", error);
   }
 }
 
@@ -123,18 +122,22 @@ async function testSingleQuery(question: string): Promise<void> {
   if (documents.length > 0) {
     console.log("\nRelevant F1 Data Found:");
     documents.forEach((doc, index) => {
-      console.log(`\n${index + 1}. [${doc.category}] ${doc.season} - ${doc.driver || doc.team || 'N/A'}`);
+      console.log(
+        `\n${index + 1}. [${doc.category}] ${doc.season} - ${doc.driver || doc.team || "N/A"}`,
+      );
       console.log(`   Similarity: ${(doc.similarity * 100).toFixed(1)}%`);
       console.log(`   ${doc.text.substring(0, 200)}...`);
     });
 
     console.log("\nSummary of Retrieved Data:");
     console.log("- Successfully retrieved F1 data using vector search");
-    console.log("- Data includes driver stats, team information, and race results");
+    console.log(
+      "- Data includes driver stats, team information, and race results",
+    );
     console.log("- Vector embeddings are working correctly with AWS Bedrock");
     console.log("- Supabase integration is functioning properly");
   } else {
-    console.log("\n❌ No relevant F1 data found for this query.");
+    console.log("\nNo relevant F1 data found for this query.");
   }
 }
 
@@ -150,18 +153,19 @@ async function showSampleData(): Promise<void> {
       .limit(3);
 
     if (error) {
-      console.error("❌ Error fetching sample data:", error);
+      console.error("Error fetching sample data:", error);
       return;
     }
 
     data?.forEach((doc, index) => {
       console.log(`\n${index + 1}. [${doc.category}] ${doc.season}`);
-      console.log(`   Driver: ${doc.driver || 'N/A'} | Team: ${doc.team || 'N/A'}`);
+      console.log(
+        `   Driver: ${doc.driver || "N/A"} | Team: ${doc.team || "N/A"}`,
+      );
       console.log(`   ${doc.text.substring(0, 150)}...`);
     });
-
   } catch (error) {
-    console.error("❌ Error displaying sample data:", error);
+    console.error("Error displaying sample data:", error);
   }
 }
 
@@ -178,19 +182,20 @@ async function main() {
     await showSampleData();
 
     // Test a specific F1 query
-    await testSingleQuery("What are Max Verstappen's achievements and championship statistics?");
+    await testSingleQuery(
+      "What are Max Verstappen's achievements and championship statistics?",
+    );
 
     console.log("\n" + "=".repeat(80));
     console.log("F1 RAG System Status: WORKING");
-    console.log("✅ Data ingestion complete");
-    console.log("✅ Vector search functional");
-    console.log("✅ AWS Bedrock integration working");
-    console.log("✅ Supabase database connected");
-    console.log("✅ Real F1 data available for queries");
+    console.log("Data ingestion complete");
+    console.log("Vector search functional");
+    console.log("AWS Bedrock integration working");
+    console.log("Supabase database connected");
+    console.log("Real F1 data available for queries");
     console.log("=".repeat(80));
-
   } catch (error) {
-    console.error("❌ Error in main function:", error);
+    console.error("Error in main function:", error);
   }
 }
 
