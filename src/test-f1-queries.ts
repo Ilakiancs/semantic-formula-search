@@ -88,7 +88,7 @@ async function searchF1Documents(
 
     // If no results with vector search, try fallback
     if (!data || data.length === 0) {
-      console.log("🔄 No vector results, trying text search...");
+      console.log("No vector results, trying text search...");
       const { data: fallbackData, error: fallbackError } = await supabase
         .from("f1_documents")
         .select("*")
@@ -98,14 +98,14 @@ async function searchF1Documents(
         .limit(limit);
 
       if (!fallbackError && fallbackData) {
-        console.log(`✅ Found ${fallbackData.length} results (text search)`);
+        console.log(`Found ${fallbackData.length} results (text search)`);
         return fallbackData.map((doc) => ({ ...doc, similarity: 0.5 }));
       }
     }
 
     return data || [];
   } catch (error) {
-    console.error("❌ Error in search:", error);
+    console.error("Error in search:", error);
     return [];
   }
 }
@@ -162,14 +162,14 @@ Answer:`;
 // Complete F1 query pipeline
 async function queryF1Data(question: string): Promise<void> {
   console.log("\n" + "=".repeat(80));
-  console.log(`🏎️  F1 Query: ${question}`);
+  console.log(`F1 Query: ${question}`);
   console.log("=".repeat(80));
 
   // Search for relevant documents
   const documents = await searchF1Documents(question);
 
   if (documents.length > 0) {
-    console.log("\n📊 Relevant F1 Data Found:");
+    console.log("\nRelevant F1 Data Found:");
     documents.forEach((doc, index) => {
       console.log(
         `\n${index + 1}. [${doc.category}] ${doc.season} - ${doc.source}`,
@@ -179,40 +179,40 @@ async function queryF1Data(question: string): Promise<void> {
     });
 
     // Generate AI response
-    console.log("\n🤖 AI Analysis:");
+    console.log("\nAI Analysis:");
     const response = await generateAIResponse(question, documents);
     console.log(response);
   } else {
-    console.log("\n❌ No relevant F1 data found for this query.");
+    console.log("\nNo relevant F1 data found for this query.");
   }
 }
 
 // Get database statistics
 async function getDatabaseStats(): Promise<void> {
-  console.log("\n📈 F1 Database Statistics:");
+  console.log("\nF1 Database Statistics:");
   console.log("=".repeat(50));
 
   try {
     const { data: stats, error } = await supabase.rpc("get_f1_statistics");
 
     if (error) {
-      console.error("❌ Error getting stats:", error);
+      console.error("Error getting stats:", error);
       return;
     }
 
-    console.log(`📊 Total Documents: ${stats.totalDocuments}`);
-    console.log(`🏆 Seasons: ${stats.seasons?.join(", ")}`);
-    console.log(`📂 Categories: ${stats.categories?.join(", ")}`);
+    console.log(`Total Documents: ${stats.totalDocuments}`);
+    console.log(`Seasons: ${stats.seasons?.join(", ")}`);
+    console.log(`Categories: ${stats.categories?.join(", ")}`);
 
     if (stats.documentsByCategory) {
-      console.log("\n📋 Documents by Category:");
+      console.log("\nDocuments by Category:");
       Object.entries(stats.documentsByCategory).forEach(([category, count]) => {
         console.log(`   ${category}: ${count}`);
       });
     }
 
     if (stats.documentsBySeason) {
-      console.log("\n📅 Documents by Season:");
+      console.log("\nDocuments by Season:");
       Object.entries(stats.documentsBySeason).forEach(([season, count]) => {
         console.log(`   ${season}: ${count}`);
       });
@@ -220,24 +220,24 @@ async function getDatabaseStats(): Promise<void> {
 
     if (stats.teams && stats.teams.length > 0) {
       console.log(
-        `\n🏁 Teams: ${stats.teams.slice(0, 10).join(", ")}${stats.teams.length > 10 ? "..." : ""}`,
+        `\nTeams: ${stats.teams.slice(0, 10).join(", ")}${stats.teams.length > 10 ? "..." : ""}`,
       );
     }
 
     if (stats.drivers && stats.drivers.length > 0) {
       console.log(
-        `\n🏎️  Drivers: ${stats.drivers.slice(0, 10).join(", ")}${stats.drivers.length > 10 ? "..." : ""}`,
+        `\nDrivers: ${stats.drivers.slice(0, 10).join(", ")}${stats.drivers.length > 10 ? "..." : ""}`,
       );
     }
   } catch (error) {
-    console.error("❌ Error getting database statistics:", error);
+    console.error("Error getting database statistics:", error);
   }
 }
 
 // Team comparison analysis
 async function compareTeams(team1: string, team2: string): Promise<void> {
   console.log("\n" + "=".repeat(80));
-  console.log(`🏁 Team Comparison: ${team1} vs ${team2}`);
+  console.log(`Team Comparison: ${team1} vs ${team2}`);
   console.log("=".repeat(80));
 
   // Search for documents about each team
@@ -255,17 +255,17 @@ async function compareTeams(team1: string, team2: string): Promise<void> {
     const question = `Compare the performance of ${team1} and ${team2} teams in Formula 1. Include details about their results, drivers, and achievements.`;
 
     const response = await generateAIResponse(question, allDocs);
-    console.log("🤖 Comparison Analysis:");
+    console.log("Comparison Analysis:");
     console.log(response);
   } else {
-    console.log(`❌ No data found for teams: ${team1} and ${team2}`);
+    console.log(`No data found for teams: ${team1} and ${team2}`);
   }
 }
 
 // Driver performance analysis
 async function analyzeDriver(driverName: string): Promise<void> {
   console.log("\n" + "=".repeat(80));
-  console.log(`🏎️  Driver Analysis: ${driverName}`);
+  console.log(`Driver Analysis: ${driverName}`);
   console.log("=".repeat(80));
 
   const docs = await searchF1Documents(
@@ -277,17 +277,17 @@ async function analyzeDriver(driverName: string): Promise<void> {
     const question = `Analyze ${driverName}'s Formula 1 performance. Include details about their results, team, points, and achievements.`;
     const response = await generateAIResponse(question, docs);
 
-    console.log("🤖 Driver Analysis:");
+    console.log("Driver Analysis:");
     console.log(response);
   } else {
-    console.log(`❌ No data found for driver: ${driverName}`);
+    console.log(`No data found for driver: ${driverName}`);
   }
 }
 
 // Season analysis
 async function analyzeSeason(season: string): Promise<void> {
   console.log("\n" + "=".repeat(80));
-  console.log(`🏆 Season Analysis: ${season}`);
+  console.log(`Season Analysis: ${season}`);
   console.log("=".repeat(80));
 
   const docs = await searchF1Documents(
@@ -299,16 +299,16 @@ async function analyzeSeason(season: string): Promise<void> {
     const question = `Provide an overview of the ${season} Formula 1 season. Include information about teams, drivers, key results, and championship standings.`;
     const response = await generateAIResponse(question, docs);
 
-    console.log("🤖 Season Analysis:");
+    console.log("Season Analysis:");
     console.log(response);
   } else {
-    console.log(`❌ No data found for season: ${season}`);
+    console.log(`No data found for season: ${season}`);
   }
 }
 
 // Main test function
 async function main() {
-  console.log("🚀 F1 RAG AI - Data Analysis Test");
+  console.log("F1 RAG AI - Data Analysis Test");
   console.log("==================================");
 
   try {
@@ -339,10 +339,10 @@ async function main() {
     await queryF1Data("Which teams use Mercedes engines?");
 
     console.log("\n" + "=".repeat(80));
-    console.log("🎯 F1 Data Analysis Complete!");
+    console.log("F1 Data Analysis Complete!");
     console.log("=".repeat(80));
   } catch (error) {
-    console.error("❌ Error in main function:", error);
+    console.error("Error in main function:", error);
   }
 }
 
