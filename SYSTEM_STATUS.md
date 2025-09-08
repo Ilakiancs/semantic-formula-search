@@ -1,17 +1,17 @@
 # F1 RAG AI - System Status Report
 
-## 🎉 SYSTEM IS WORKING!
+## SYSTEM IS WORKING!
 
 Your F1 RAG AI system has been successfully fixed and is now functional. Here's the current status:
 
-## ✅ Working Components
+## Working Components
 
 ### Core Functionality
-- **✅ Database Connection**: Supabase is properly connected with 51 F1 documents
-- **✅ Vector Search**: Embedding generation and similarity search working perfectly
-- **✅ Data Access**: Can query F1 data from 2023 and 2024 seasons
-- **✅ AWS Bedrock Embeddings**: Using `cohere.embed-english-v3` successfully
-- **✅ TypeScript Compilation**: All main code compiles without errors
+- **Database Connection**: Supabase is properly connected with 51 F1 documents
+- **Vector Search**: Embedding generation and similarity search working perfectly
+- **Data Access**: Can query F1 data from 2023 and 2024 seasons
+- **AWS Bedrock Embeddings**: Using `cohere.embed-english-v3` successfully
+- **TypeScript Compilation**: All main code compiles without errors
 
 ### Data Coverage
 - **Drivers**: Max Verstappen, Lewis Hamilton, and all F1 drivers
@@ -20,19 +20,19 @@ Your F1 RAG AI system has been successfully fixed and is now functional. Here's 
 - **Categories**: drivers, race_results, teams
 - **Total Documents**: 51 searchable F1 documents
 
-## 🔧 Configuration Status
+## Configuration Status
 
 ### Environment Variables (Fixed)
 ```
-BEDROCK_EMBEDDING_MODEL=cohere.embed-english-v3  ✅
-BEDROCK_CHAT_MODEL=meta.llama3-1-8b-instruct-v1:0  ⚠️
-USE_BEDROCK_CHAT=false  ✅ (Disabled due to model access issues)
-SUPABASE_URL=configured  ✅
-SUPABASE_ANON_KEY=configured  ✅
-AWS_REGION=ap-southeast-1  ✅
+BEDROCK_EMBEDDING_MODEL=cohere.embed-english-v3  Working
+BEDROCK_CHAT_MODEL=meta.llama3-1-8b-instruct-v1:0  Warning
+USE_BEDROCK_CHAT=false  Working (Disabled due to model access issues)
+SUPABASE_URL=configured  Working
+SUPABASE_ANON_KEY=configured  Working
+AWS_REGION=ap-southeast-1  Working
 ```
 
-## 🚀 How to Use the System
+## How to Use the System
 
 ### 1. Start the Backend Services
 The core search functionality is ready. Test it with:
@@ -60,14 +60,14 @@ npm run dev
 ```
 Then visit: http://localhost:3000
 
-## 🧪 Verified Test Results
+## Verified Test Results
 
 ### Search Test Results
 ```
-✅ Vector search test completed!
-✅ Supabase connection working
-✅ AWS Bedrock embeddings working  
-✅ F1 data accessible and searchable
+Vector search test completed!
+Supabase connection working
+AWS Bedrock embeddings working  
+F1 data accessible and searchable
 ```
 
 ### Example Queries That Work
@@ -83,7 +83,7 @@ Then visit: http://localhost:3000
 4. **"McLaren team performance"**
    - Returns: Team statistics and race results
 
-## ⚠️ Known Issues & Workarounds
+## Known Issues & Workarounds
 
 ### 1. AWS Bedrock Chat Models
 - **Issue**: No access to Anthropic/Meta chat models in your AWS region
@@ -97,7 +97,7 @@ Then visit: http://localhost:3000
 - **Impact**: Use `npm run dev` instead of `npm run build`
 - **Workaround**: Development server provides full functionality
 
-## 🎯 What You Can Do Right Now
+## What You Can Do Right Now
 
 ### Immediate Usage
 1. **Vector Search**: Fully functional F1 data search
@@ -116,7 +116,7 @@ npm run check-setup
 cd ui && npm run dev
 ```
 
-## 📊 System Performance
+## System Performance
 
 - **Database**: 51 F1 documents indexed
 - **Response Time**: Sub-second search queries
@@ -124,7 +124,7 @@ cd ui && npm run dev
 - **Vector Dimensions**: 1024 (high precision)
 - **Search Accuracy**: High similarity matching
 
-## 🔮 Next Steps (Optional Improvements)
+## Next Steps (Optional Improvements)
 
 ### 1. Enable Full AI Chat (Requires AWS Setup)
 ```bash
@@ -146,7 +146,7 @@ npm run ingest  # Re-run data ingestion
 # (Current development mode works perfectly)
 ```
 
-## 🏁 Conclusion
+## Conclusion
 
 **Your F1 RAG AI system is now working and ready to answer F1 questions!**
 
