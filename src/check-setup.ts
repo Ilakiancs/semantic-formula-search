@@ -39,7 +39,7 @@ class SetupChecker {
 
   // Check environment variables
   async checkEnvironmentVariables(): Promise<void> {
-    console.log(chalk.blue("🔍 Checking environment variables..."));
+    console.log(chalk.blue("Checking environment variables..."));
 
     try {
       // AWS Configuration
@@ -56,8 +56,8 @@ class SetupChecker {
           status: "fail",
           message: "AWS credentials are missing",
           details: [
-            `AWS_ACCESS_KEY_ID: ${config.AWS_ACCESS_KEY_ID ? "✓" : "✗"}`,
-            `AWS_SECRET_ACCESS_KEY: ${config.AWS_SECRET_ACCESS_KEY ? "✓" : "✗"}`,
+            `AWS_ACCESS_KEY_ID: ${config.AWS_ACCESS_KEY_ID ? "Yes" : "No"}`,
+            `AWS_SECRET_ACCESS_KEY: ${config.AWS_SECRET_ACCESS_KEY ? "Yes" : "No"}`,
           ],
           fix: "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in your .env file",
         });
@@ -75,12 +75,12 @@ class SetupChecker {
           message: `${dbType} is configured`,
           details: supabaseConfigured
             ? [
-                `Supabase URL: ${config.SUPABASE_URL ? "✓" : "✗"}`,
-                `Anon Key: ${config.SUPABASE_ANON_KEY ? "✓" : "✗"}`,
+                `Supabase URL: ${config.SUPABASE_URL ? "Yes" : "No"}`,
+                `Anon Key: ${config.SUPABASE_ANON_KEY ? "Yes" : "No"}`,
               ]
             : [
-                `Astra Token: ${config.ASTRA_DB_APPLICATION_TOKEN ? "✓" : "✗"}`,
-                `Astra Endpoint: ${config.ASTRA_DB_API_ENDPOINT ? "✓" : "✗"}`,
+                `Astra Token: ${config.ASTRA_DB_APPLICATION_TOKEN ? "Yes" : "No"}`,
+                `Astra Endpoint: ${config.ASTRA_DB_API_ENDPOINT ? "Yes" : "No"}`,
               ],
         });
       } else {
@@ -118,7 +118,7 @@ class SetupChecker {
 
   // Check AWS Bedrock connection
   async checkBedrockConnection(): Promise<void> {
-    console.log(chalk.blue("🧠 Testing AWS Bedrock connection..."));
+    console.log(chalk.blue("Testing AWS Bedrock connection..."));
 
     try {
       const bedrockTest = await testBedrockConnection();
@@ -129,8 +129,8 @@ class SetupChecker {
           status: "pass",
           message: "AWS Bedrock is working correctly",
           details: [
-            `Embedding Model: ${bedrockTest.details.embeddingModel} ${bedrockTest.details.embeddingTest ? "✓" : "✗"}`,
-            `Chat Model: ${bedrockTest.details.chatModel} ${bedrockTest.details.chatTest ? "✓" : "✗"}`,
+            `Embedding Model: ${bedrockTest.details.embeddingModel} ${bedrockTest.details.embeddingTest ? "Working" : "Failed"}`,
+            `Chat Model: ${bedrockTest.details.chatModel} ${bedrockTest.details.chatTest ? "Working" : "Failed"}`,
           ],
         });
       } else {
@@ -155,7 +155,7 @@ class SetupChecker {
 
   // Check database connection
   async checkDatabaseConnection(): Promise<void> {
-    console.log(chalk.blue("🗄️ Testing database connection..."));
+    console.log(chalk.blue("Testing database connection..."));
 
     try {
       const db = getDatabase();
@@ -168,7 +168,7 @@ class SetupChecker {
           message: `${db.getProviderName()} is working correctly`,
           details: [
             `Documents: ${healthCheck.details.documentsCount}`,
-            `Tables exist: ${healthCheck.details.tablesExist ? "✓" : "✗"}`,
+            `Tables exist: ${healthCheck.details.tablesExist ? "Yes" : "No"}`,
           ],
         });
       } else {
@@ -193,7 +193,7 @@ class SetupChecker {
 
   // Check if required CSV files exist
   async checkDataFiles(): Promise<void> {
-    console.log(chalk.blue("📁 Checking F1 data files..."));
+    console.log(chalk.blue("Checking F1 data files..."));
 
     const fs = require("fs");
     const path = require("path");
@@ -254,7 +254,7 @@ class SetupChecker {
 
   // Check if data has been ingested
   async checkDataIngestion(): Promise<void> {
-    console.log(chalk.blue("📊 Checking data ingestion status..."));
+    console.log(chalk.blue("Checking data ingestion status..."));
 
     try {
       const db = getDatabase();
@@ -293,7 +293,7 @@ class SetupChecker {
 
   // Check Node.js and package dependencies
   async checkDependencies(): Promise<void> {
-    console.log(chalk.blue("📦 Checking dependencies..."));
+    console.log(chalk.blue("Checking dependencies..."));
 
     try {
       const nodeVersion = process.version;
@@ -330,9 +330,9 @@ class SetupChecker {
       for (const pkg of criticalPackages) {
         try {
           require.resolve(pkg);
-          packageDetails.push(`${pkg}: ✓`);
+          packageDetails.push(`${pkg}: Installed`);
         } catch {
-          packageDetails.push(`${pkg}: ✗`);
+          packageDetails.push(`${pkg}: Missing`);
           allPackagesAvailable = false;
         }
       }
@@ -366,7 +366,7 @@ class SetupChecker {
   // Print results
   private printResults(): SetupSummary {
     console.log("\n" + "=".repeat(60));
-    console.log(chalk.bold.cyan("🏎️  F1 RAG AI SETUP VERIFICATION RESULTS"));
+    console.log(chalk.bold.cyan("F1 RAG AI SETUP VERIFICATION RESULTS"));
     console.log("=".repeat(60));
 
     let passed = 0;
@@ -379,17 +379,17 @@ class SetupChecker {
 
       switch (result.status) {
         case "pass":
-          icon = "✅";
+          icon = "[PASS]";
           color = chalk.green;
           passed++;
           break;
         case "fail":
-          icon = "❌";
+          icon = "[FAIL]";
           color = chalk.red;
           failed++;
           break;
         case "warning":
-          icon = "⚠️";
+          icon = "[WARN]";
           color = chalk.yellow;
           warnings++;
           break;
@@ -405,7 +405,7 @@ class SetupChecker {
       }
 
       if (result.fix && result.status !== "pass") {
-        console.log(`   ${chalk.cyan("💡 Fix:")} ${result.fix}`);
+        console.log(`   ${chalk.cyan("Fix:")} ${result.fix}`);
       }
     }
 
@@ -416,34 +416,34 @@ class SetupChecker {
     const ready = failed === 0;
 
     console.log("\n" + "=".repeat(60));
-    console.log(chalk.bold("📊 SUMMARY"));
+    console.log(chalk.bold("SUMMARY"));
     console.log("=".repeat(60));
     console.log(`Total checks: ${totalChecks}`);
-    console.log(`${chalk.green("✅ Passed:")} ${passed}`);
-    console.log(`${chalk.yellow("⚠️  Warnings:")} ${warnings}`);
-    console.log(`${chalk.red("❌ Failed:")} ${failed}`);
+    console.log(`${chalk.green("Passed:")} ${passed}`);
+    console.log(`${chalk.yellow("Warnings:")} ${warnings}`);
+    console.log(`${chalk.red("Failed:")} ${failed}`);
 
     console.log("\n" + "=".repeat(60));
 
     if (ready) {
-      console.log(chalk.green(chalk.bold("🎉 SYSTEM READY!")));
+      console.log(chalk.green(chalk.bold("SYSTEM READY!")));
       console.log(
         chalk.green(
           "Your F1 RAG AI system is properly configured and ready to use.",
         ),
       );
 
-      console.log(chalk.bold("\n🚀 Quick Start:"));
+      console.log(chalk.bold("\nQuick Start:"));
       console.log("1. Ingest data: " + chalk.cyan("npm run ingest"));
       console.log("2. Test queries: " + chalk.cyan("npm run answer"));
       console.log("3. Start UI: " + chalk.cyan("cd ui && npm run dev"));
     } else {
-      console.log(chalk.red(chalk.bold("❌ SETUP INCOMPLETE")));
+      console.log(chalk.red(chalk.bold("SETUP INCOMPLETE")));
       console.log(
         chalk.red("Please fix the failed checks above before proceeding."),
       );
 
-      console.log(chalk.bold("\n🔧 Common Fixes:"));
+      console.log(chalk.bold("\nCommon Fixes:"));
       console.log("• Set AWS credentials in .env file");
       console.log("• Configure database (Supabase or Astra DB)");
       console.log("• Install dependencies: " + chalk.cyan("npm install"));
@@ -451,7 +451,7 @@ class SetupChecker {
     }
 
     if (warnings > 0) {
-      console.log(chalk.yellow(chalk.bold("\n⚠️  WARNINGS")));
+      console.log(chalk.yellow(chalk.bold("\nWARNINGS")));
       console.log(
         chalk.yellow("Some optional features may not work properly."),
       );
@@ -471,7 +471,7 @@ class SetupChecker {
 
   // Run all checks
   async runAllChecks(): Promise<SetupSummary> {
-    console.log(chalk.cyan(chalk.bold("🏎️ F1 RAG AI - Setup Verification\n")));
+    console.log(chalk.cyan(chalk.bold("F1 RAG AI - Setup Verification\n")));
 
     await this.checkDependencies();
     await this.checkEnvironmentVariables();
@@ -493,7 +493,7 @@ async function main() {
     // Exit with appropriate code
     process.exit(summary.ready ? 0 : 1);
   } catch (error) {
-    console.error(chalk.red("\n❌ Setup verification failed:"), error);
+    console.error(chalk.red("\nSetup verification failed:"), error);
     process.exit(1);
   }
 }
