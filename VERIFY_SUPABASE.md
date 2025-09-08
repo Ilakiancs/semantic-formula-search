@@ -1,17 +1,17 @@
 # Supabase Verification Guide
 
-## 🔍 Issue Detected
+## Issue Detected
 
 The Supabase URL `https://ukyqgtisqppyxfadqkk.supabase.co` appears to be unreachable. This guide will help you verify and fix your Supabase setup.
 
-## 🚨 Common Causes
+## Common Causes
 
 1. **Project not fully initialized** - Supabase projects take 2-3 minutes to become active
 2. **Incorrect URL** - The project URL might be wrong
 3. **Project paused/deleted** - Free tier projects can be paused
 4. **Network issues** - Local network or DNS problems
 
-## ✅ Step-by-Step Verification
+## Step-by-Step Verification
 
 ### Step 1: Check Supabase Project Status
 
@@ -19,10 +19,10 @@ The Supabase URL `https://ukyqgtisqppyxfadqkk.supabase.co` appears to be unreach
 2. Sign in to your account
 3. Check your project dashboard
 4. Look for your project status:
-   - ✅ **Active** (green) - Project is running
-   - ⏸️ **Paused** (yellow) - Click "Restore" to resume
-   - 🔄 **Starting** (blue) - Wait for completion
-   - ❌ **Error** (red) - Project has issues
+   - **Active** (green) - Project is running
+   - **Paused** (yellow) - Click "Restore" to resume
+   - **Starting** (blue) - Wait for completion
+   - **Error** (red) - Project has issues
 
 ### Step 2: Get Correct Project URL
 
@@ -48,7 +48,7 @@ SUPABASE_URL=https://your-actual-project-id.supabase.co
 SUPABASE_ANON_KEY=your_actual_anon_key_here
 ```
 
-## 🔧 Quick Fixes
+## Quick Fixes
 
 ### Fix 1: Project Not Ready
 If your project is still initializing:
@@ -77,7 +77,7 @@ If your project is corrupted or missing:
 5. Wait for initialization
 6. Get new URL and keys
 
-## 🧪 Test Connection
+## Test Connection
 
 After fixing, test your connection:
 
@@ -93,7 +93,7 @@ Or use our test script:
 node test-supabase.js
 ```
 
-## 📋 Database Setup (After Connection Works)
+## Database Setup (After Connection Works)
 
 Once your Supabase project is accessible:
 
@@ -109,7 +109,7 @@ Once your Supabase project is accessible:
    npm run check-setup
    ```
 
-## 🆘 Alternative Solutions
+## Alternative Solutions
 
 ### Option 1: Use Different Supabase Account
 - Create account with different email
@@ -133,16 +133,16 @@ For immediate testing without external database:
 - Focus on AWS Bedrock setup first
 - Add database later when issues resolved
 
-## ✅ Success Indicators
+## Success Indicators
 
 Your Supabase is working when:
-- ✅ Project shows "Active" in dashboard
-- ✅ URL is accessible in browser
-- ✅ `curl` command returns HTTP headers
-- ✅ `node test-supabase.js` connects successfully
-- ✅ `npm run check-setup` shows database connection working
+- Project shows "Active" in dashboard
+- URL is accessible in browser
+- `curl` command returns HTTP headers
+- `node test-supabase.js` connects successfully
+- `npm run check-setup` shows database connection working
 
-## 🔄 Next Steps
+## Next Steps
 
 1. **Fix Supabase connection** using steps above
 2. **Complete database setup** with SQL commands
@@ -151,7 +151,7 @@ Your Supabase is working when:
 5. **Ingest F1 data**: `npm run ingest`
 6. **Start application**: `cd ui && npm run dev`
 
-## 📞 Still Having Issues?
+## Still Having Issues?
 
 If problems persist:
 1. Check Supabase status page for outages
