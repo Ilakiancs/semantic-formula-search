@@ -113,7 +113,7 @@ async function processCSVFile(
   const filePath = path.join("formula1-datasets", filename);
 
   if (!fs.existsSync(filePath)) {
-    console.log(`⚠️  File not found: ${filename}`);
+    console.log(`File not found: ${filename}`);
     return;
   }
 
@@ -172,13 +172,13 @@ async function processCSVFile(
 
             if (error) {
               console.log(
-                `   ⚠️  Error inserting row ${processed}: ${error.message}`,
+                `   Error inserting row ${processed}: ${error.message}`,
               );
             } else {
               successful++;
               if (successful % 5 === 0) {
                 console.log(
-                  `   ✅ Processed ${successful}/${rows.length} rows...`,
+                  `   Processed ${successful}/${rows.length} rows...`,
                 );
               }
             }
@@ -186,12 +186,12 @@ async function processCSVFile(
             // Add delay to avoid rate limiting
             await new Promise((resolve) => setTimeout(resolve, 1000));
           } catch (error) {
-            console.log(`   ⚠️  Error processing row ${processed}: ${error}`);
+            console.log(`   Error processing row ${processed}: ${error}`);
           }
         }
 
         console.log(
-          `   ✅ Completed: ${successful}/${processed} rows successfully inserted`,
+          `   Completed: ${successful}/${processed} rows successfully inserted`,
         );
         resolve();
       })
