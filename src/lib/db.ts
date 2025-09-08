@@ -107,7 +107,7 @@ class AstraDBProvider implements DatabaseProvider {
       this.db = this.client.db(dbConfig.endpoint);
       this.collection = this.db.collection("f1gpt");
 
-      console.log("✅ DataStax Astra DB client initialized");
+      console.log("DataStax Astra DB client initialized");
     }
 
     return { client: this.client, db: this.db, collection: this.collection };
@@ -117,7 +117,7 @@ class AstraDBProvider implements DatabaseProvider {
     const { db } = await this.getClient();
 
     try {
-      console.log("🔄 Initializing DataStax Astra DB...");
+      console.log("Initializing DataStax Astra DB...");
 
       const res = await db.createCollection("f1gpt", {
         vector: {
@@ -126,12 +126,12 @@ class AstraDBProvider implements DatabaseProvider {
         },
       });
 
-      console.log("✅ DataStax Astra DB initialized");
+      console.log("DataStax Astra DB initialized");
     } catch (error: any) {
       if (error.message?.includes("already exists")) {
         console.log("ℹ️ Collection already exists");
       } else {
-        console.error("❌ Failed to initialize Astra DB:", error);
+        console.error("Failed to initialize Astra DB:", error);
         throw error;
       }
     }
@@ -156,7 +156,7 @@ class AstraDBProvider implements DatabaseProvider {
     }
 
     if (errors.length > 0) {
-      console.warn("⚠️ Validation errors:", errors);
+      console.warn("Validation errors:", errors);
       if (validatedDocuments.length === 0) {
         throw new Error(
           `All documents failed validation: ${errors.join("; ")}`,
@@ -165,7 +165,7 @@ class AstraDBProvider implements DatabaseProvider {
     }
 
     console.log(
-      `📝 Inserting ${validatedDocuments.length} documents into Astra DB...`,
+      `Inserting ${validatedDocuments.length} documents into Astra DB...`,
     );
 
     // Transform for Astra DB
@@ -185,9 +185,7 @@ class AstraDBProvider implements DatabaseProvider {
     }));
 
     const result = await collection.insertMany(astraDocuments);
-    console.log(
-      `✅ Successfully inserted ${validatedDocuments.length} documents`,
-    );
+    console.log(`Successfully inserted ${validatedDocuments.length} documents`);
 
     return result.insertedIds || [];
   }
