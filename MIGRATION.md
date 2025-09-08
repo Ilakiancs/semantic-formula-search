@@ -2,14 +2,14 @@
 
 This guide helps you migrate from the previous version to the new architecture with Zod validation, Supabase support, and Bedrock-only integration.
 
-## 🔄 What's New
+## What's New
 
 ### Major Changes
-- **🛡️ Zod Validation**: All data operations now use type-safe schemas
-- **🗄️ Database Options**: Choose between Supabase (recommended) or Astra DB
-- **🤖 Bedrock Only**: Removed OpenRouter dependency, pure AWS Bedrock
-- **📊 Enhanced Processing**: Better data ingestion with validation and batch processing
-- **🔍 Health Monitoring**: Comprehensive system health checks
+- **Zod Validation**: All data operations now use type-safe schemas
+- **Database Options**: Choose between Supabase (recommended) or Astra DB
+- **Bedrock Only**: Removed OpenRouter dependency, pure AWS Bedrock
+- **Enhanced Processing**: Better data ingestion with validation and batch processing
+- **Health Monitoring**: Comprehensive system health checks
 
 ### Breaking Changes
 - Environment variables restructured
@@ -17,7 +17,7 @@ This guide helps you migrate from the previous version to the new architecture w
 - API response format updated
 - Some scripts renamed
 
-## 🚀 Migration Steps
+## Migration Steps
 
 ### Step 1: Update Dependencies
 
@@ -153,7 +153,7 @@ npm run ingest
 npm run ingest -- --max-rows 50 --validate-only
 ```
 
-## 🔧 API Changes
+## API Changes
 
 ### Chat API Response Format
 
@@ -200,7 +200,7 @@ npm run ingest -- --max-rows 50 --validate-only
 }
 ```
 
-## 📝 Script Changes
+## Script Changes
 
 ### Updated Scripts
 
@@ -229,7 +229,7 @@ npm run ingest -- --all-files --priority 3
 npm run ingest -- --delay 2000
 ```
 
-## 🔍 New Features
+## New Features
 
 ### 1. Comprehensive Health Checks
 ```bash
@@ -265,7 +265,7 @@ Tests:
 - Health monitoring for both systems
 - Easy switching between providers
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Migration Issues
 
@@ -319,7 +319,7 @@ Tests:
    - Monitor console output for error messages
    - Use browser developer tools for UI issues
 
-## 🎯 Next Steps
+## Next Steps
 
 After successful migration:
 
@@ -341,7 +341,7 @@ After successful migration:
    - Comprehensive health monitoring
    - Flexible database options
 
-## 📚 Resources
+## Resources
 
 - [Environment Template](./env.template) - Complete configuration guide
 - [Supabase Setup](./src/lib/supabase.ts) - Database schema and functions
