@@ -212,9 +212,9 @@ async function main() {
     .neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all except non-existent ID
 
   if (deleteError) {
-    console.log("⚠️  Error clearing documents:", deleteError.message);
+    console.log("Error clearing documents:", deleteError.message);
   } else {
-    console.log("✅ Existing documents cleared");
+    console.log("Existing documents cleared");
   }
 
   // Process each CSV file
@@ -222,7 +222,7 @@ async function main() {
     try {
       await processCSVFile(file.filename, file.category, file.season);
     } catch (error) {
-      console.error(`❌ Error processing ${file.filename}:`, error);
+      console.error(`Error processing ${file.filename}:`, error);
     }
   }
 
@@ -232,7 +232,7 @@ async function main() {
     .select("*", { count: "exact", head: true });
 
   if (countError) {
-    console.error("❌ Error getting document count:", countError);
+    console.error("Error getting document count:", countError);
   } else {
     console.log(`\nINGESTION COMPLETE!`);
     console.log(`Total documents in database: ${count}`);
