@@ -196,7 +196,7 @@ class AstraDBProvider implements DatabaseProvider {
     const validatedQuery = DatabaseQuerySchema.parse(queryData);
 
     console.log(
-      `🔍 Searching Astra DB: "${validatedQuery.query}" (limit: ${validatedQuery.limit})`,
+      `Searching Astra DB: "${validatedQuery.query}" (limit: ${validatedQuery.limit})`,
     );
 
     const searchOptions: any = {
@@ -239,7 +239,7 @@ class AstraDBProvider implements DatabaseProvider {
       similarity: 1.0, // Astra DB doesn't return similarity scores directly
     }));
 
-    console.log(`✅ Found ${searchResults.length} results in Astra DB`);
+    console.log(`Found ${searchResults.length} results in Astra DB`);
     return searchResults;
   }
 
@@ -296,9 +296,9 @@ class AstraDBProvider implements DatabaseProvider {
   async clear(): Promise<void> {
     const { collection } = await this.getClient();
 
-    console.log("🗑️ Clearing all documents from Astra DB...");
+    console.log("Clearing all documents from Astra DB...");
     await collection.deleteMany({});
-    console.log("✅ All documents cleared from Astra DB");
+    console.log("All documents cleared from Astra DB");
   }
 
   async healthCheck(): Promise<HealthCheckResult> {
@@ -414,7 +414,7 @@ export class Database {
 
   constructor() {
     this.provider = getDatabaseProvider();
-    console.log(`🗄️ Using database provider: ${this.provider.name}`);
+    console.log(`Using database provider: ${this.provider.name}`);
   }
 
   async initialize(): Promise<void> {
