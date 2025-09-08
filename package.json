@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "check-setup": "ts-node src/check-setup.ts",
     "recreate-collection": "ts-node src/recreate-collection.ts",
     "ingest": "ts-node src/guaranteed-f1.ts",
     "team-analysis": "ts-node src/simple-team-query.ts",
-    "answer": "ts-node src/answer.ts",
-    "test-system": "ts-node src/test-system.ts"
+    "answer": "ts-node src/answer.ts"
   },
   "keywords": [],
   "author": "",
