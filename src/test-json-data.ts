@@ -681,7 +681,7 @@ async function demonstrateSampleQueries(): Promise<void> {
       );
 
       if (results.length > 0) {
-        console.log(`   ✅ Found ${results.length} results:`);
+        console.log(`   Found ${results.length} results:`);
         results.forEach((result, index) => {
           const preview = result.text.substring(0, 80) + "...";
           console.log(
@@ -689,10 +689,10 @@ async function demonstrateSampleQueries(): Promise<void> {
           );
         });
       } else {
-        console.log(`   ❌ No results found`);
+        console.log(`   No results found`);
       }
     } catch (error) {
-      console.log(`   ❌ Query failed: ${error}`);
+      console.log(`   Query failed: ${error}`);
     }
 
     // Add small delay between queries
@@ -702,7 +702,7 @@ async function demonstrateSampleQueries(): Promise<void> {
 
 // Main test function
 async function runJSONDataTests(): Promise<void> {
-  console.log("🚀 F1 JSON DATA COMPREHENSIVE TESTING");
+  console.log("F1 JSON DATA COMPREHENSIVE TESTING");
   console.log("=====================================");
   console.log("Testing enhanced JSON-based F1 data system...\n");
 
@@ -710,7 +710,7 @@ async function runJSONDataTests(): Promise<void> {
     const tests: TestResult[] = [];
 
     // Run all tests
-    console.log("🔍 Running comprehensive tests...");
+    console.log("Running comprehensive tests...");
 
     tests.push(await testDatabaseConnectivity());
     tests.push(await testDataQuality());
@@ -733,34 +733,34 @@ async function runJSONDataTests(): Promise<void> {
     await demonstrateSampleQueries();
 
     // Final system status
-    const passCount = tests.filter((r) => r.status === "✅ Pass").length;
+    const passCount = tests.filter((r) => r.status === "Pass").length;
     const totalTests = tests.length;
 
     console.log("\n" + "=".repeat(60));
-    console.log("🎯 FINAL SYSTEM STATUS");
+    console.log("FINAL SYSTEM STATUS");
     console.log("=".repeat(60));
 
     if (passCount === totalTests) {
-      console.log("🏆 SYSTEM STATUS: FULLY OPERATIONAL");
-      console.log("✅ JSON-based F1 data system is working perfectly");
-      console.log("✅ All tests passed successfully");
-      console.log("✅ Ready for production use");
+      console.log("SYSTEM STATUS: FULLY OPERATIONAL");
+      console.log("JSON-based F1 data system is working perfectly");
+      console.log("All tests passed successfully");
+      console.log("Ready for production use");
     } else if (passCount >= totalTests * 0.8) {
-      console.log("✅ SYSTEM STATUS: OPERATIONAL WITH MINOR ISSUES");
-      console.log("⚠️ Most tests passed with some warnings");
-      console.log("💡 Minor optimizations recommended");
+      console.log("SYSTEM STATUS: OPERATIONAL WITH MINOR ISSUES");
+      console.log("Most tests passed with some warnings");
+      console.log("Minor optimizations recommended");
     } else {
-      console.log("⚠️ SYSTEM STATUS: NEEDS ATTENTION");
-      console.log("❌ Several tests failed");
-      console.log("🔧 System requires fixes before production use");
+      console.log("SYSTEM STATUS: NEEDS ATTENTION");
+      console.log("Several tests failed");
+      console.log("System requires fixes before production use");
     }
 
-    console.log("\n💡 Next Steps:");
+    console.log("\nNext Steps:");
     console.log("   • Run specific analytics: npx ts-node src/f1-analytics.ts");
     console.log("   • Test web interface: cd ui && npm run dev");
     console.log("   • System monitoring: npx ts-node src/system-summary.ts");
   } catch (error) {
-    console.error("❌ Test suite failed:", error);
+    console.error("Test suite failed:", error);
   }
 }
 
