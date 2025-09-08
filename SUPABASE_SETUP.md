@@ -2,12 +2,12 @@
 
 This guide will help you set up Supabase for your F1 RAG AI Cloud project with vector search capabilities.
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Supabase account (free tier available)
 - F1 RAG AI Cloud project configured with Supabase credentials
 
-## 🚀 Quick Setup
+## Quick Setup
 
 ### Step 1: Enable pgvector Extension
 
@@ -176,7 +176,7 @@ CREATE POLICY "Allow read access for anonymous users" ON f1_documents
   FOR SELECT USING (true);
 ```
 
-## ✅ Verification
+## Verification
 
 After running all the SQL commands, verify your setup:
 
@@ -196,7 +196,7 @@ SELECT * FROM search_f1_documents(
 );
 ```
 
-## 🔧 Environment Configuration
+## Environment Configuration
 
 Your `.env` file should already be configured with:
 
@@ -206,7 +206,7 @@ SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 USE_SUPABASE=true
 ```
 
-## 🧪 Testing Your Setup
+## Testing Your Setup
 
 After completing the Supabase setup:
 
@@ -224,7 +224,7 @@ After completing the Supabase setup:
    npm run ingest
    ```
 
-## 📊 Understanding the Schema
+## Understanding the Schema
 
 ### Table Structure
 
@@ -253,7 +253,7 @@ After completing the Supabase setup:
 - **driver_idx**: Fast filtering by driver
 - **embedding_idx**: Vector similarity search (IVFFlat algorithm)
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -279,7 +279,7 @@ After completing the Supabase setup:
 2. **Batch Inserts**: Use batch inserts for better performance when loading data
 3. **Connection Pooling**: Supabase handles connection pooling automatically
 
-## 📞 Support
+## Support
 
 If you encounter issues:
 
@@ -288,7 +288,7 @@ If you encounter issues:
 3. Verify your environment variables are correct
 4. Check that all SQL commands executed successfully
 
-## 🎯 Next Steps
+## Next Steps
 
 Once your Supabase setup is complete:
 
@@ -298,4 +298,4 @@ Once your Supabase setup is complete:
 4. Start the UI with `cd ui && npm run dev`
 5. Ask questions about Formula 1!
 
-Your F1 RAG AI system with Supabase is now ready to use! 🏎️
+Your F1 RAG AI system with Supabase is now ready to use!
