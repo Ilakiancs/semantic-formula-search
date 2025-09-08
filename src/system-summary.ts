@@ -57,14 +57,14 @@ async function testSupabaseConnection(): Promise<SystemStatus> {
 
     return {
       component: "Supabase Database",
-      status: "✅ Working",
+      status: "Working",
       details: "Successfully connected and querying data",
       lastChecked: new Date(),
     };
   } catch (error) {
     return {
       component: "Supabase Database",
-      status: "❌ Error",
+      status: "Error",
       details: `Unexpected error: ${error}`,
       lastChecked: new Date(),
     };
@@ -88,7 +88,11 @@ async function testBedrockEmbeddings(): Promise<SystemStatus> {
     const response = await bedrock.send(command);
     const result = JSON.parse(new TextDecoder().decode(response.body));
 
-    if (result.embeddings && result.embeddings[0] && result.embeddings[0].length === 1024) {
+    if (
+      result.embeddings &&
+      result.embeddings[0] &&
+      result.embeddings[0].length === 1024
+    ) {
       return {
         component: "AWS Bedrock Embeddings",
         status: "Working",
@@ -99,14 +103,14 @@ async function testBedrockEmbeddings(): Promise<SystemStatus> {
 
     return {
       component: "AWS Bedrock Embeddings",
-        status: "Warning",
+      status: "Warning",
       details: "Embeddings generated but unexpected format",
       lastChecked: new Date(),
     };
   } catch (error) {
     return {
       component: "AWS Bedrock Embeddings",
-      status: "❌ Error",
+      status: "Error",
       details: `Failed to generate embeddings: ${error}`,
       lastChecked: new Date(),
     };
@@ -147,14 +151,14 @@ async function testBedrockChat(): Promise<SystemStatus> {
 
     return {
       component: "AWS Bedrock Chat",
-        status: "Warning",
+      status: "Warning",
       details: "Chat response generated but unexpected format",
       lastChecked: new Date(),
     };
   } catch (error) {
     return {
       component: "AWS Bedrock Chat",
-      status: "❌ Error",
+      status: "Error",
       details: `Failed to generate chat response: ${error}`,
       lastChecked: new Date(),
     };
@@ -184,14 +188,14 @@ async function testVectorSearch(): Promise<SystemStatus> {
 
     return {
       component: "Vector Search",
-      status: "✅ Working",
+      status: "Working",
       details: `Vector search returned ${data?.length || 0} results`,
       lastChecked: new Date(),
     };
   } catch (error) {
     return {
       component: "Vector Search",
-      status: "❌ Error",
+      status: "Error",
       details: `Vector search error: ${error}`,
       lastChecked: new Date(),
     };
@@ -244,7 +248,7 @@ async function getDataSummary(): Promise<DataSummary | null> {
 // Display system status
 function displaySystemStatus(statuses: SystemStatus[]): void {
   console.log("\nF1 RAG AI SYSTEM STATUS");
-  console.log("=" .repeat(50));
+  console.log("=".repeat(50));
 
   statuses.forEach((status) => {
     console.log(`\n${status.status} ${status.component}`);
@@ -252,11 +256,15 @@ function displaySystemStatus(statuses: SystemStatus[]): void {
     console.log(`   Last checked: ${status.lastChecked.toLocaleString()}`);
   });
 
-  const workingComponents = statuses.filter(s => s.status === "Working").length;
+  const workingComponents = statuses.filter(
+    (s) => s.status === "Working",
+  ).length;
   const totalComponents = statuses.length;
 
   console.log("\n" + "=".repeat(50));
-  console.log(`OVERALL STATUS: ${workingComponents}/${totalComponents} components working`);
+  console.log(
+    `OVERALL STATUS: ${workingComponents}/${totalComponents} components working`,
+  );
 
   if (workingComponents === totalComponents) {
     console.log("ALL SYSTEMS OPERATIONAL");
@@ -270,7 +278,7 @@ function displaySystemStatus(statuses: SystemStatus[]): void {
 // Display data summary
 function displayDataSummary(summary: DataSummary): void {
   console.log("\nF1 DATA SUMMARY");
-  console.log("=" .repeat(50));
+  console.log("=".repeat(50));
 
   console.log(`Total Documents: ${summary.totalDocuments.toLocaleString()}`);
   console.log(`Seasons Available: ${summary.seasons.join(", ")}`);
@@ -292,51 +300,51 @@ function displayDataSummary(summary: DataSummary): void {
 // Display feature capabilities
 function displayFeatures(): void {
   console.log("\nAVAILABLE FEATURES");
-  console.log("=" .repeat(50));
+  console.log("=".repeat(50));
 
   const features = [
     {
       name: "Data Ingestion",
       description: "Load F1 CSV data into Supabase with vector embeddings",
       command: "npm run ingest",
-      status: "Ready"
+      status: "Ready",
     },
     {
       name: "Vector Search",
       description: "Search F1 data using semantic similarity",
       command: "npx ts-node src/single-f1-test.ts",
-      status: "Ready"
+      status: "Ready",
     },
     {
       name: "Championship Analysis",
       description: "Analyze driver and constructor championships",
       command: "npx ts-node src/f1-analytics.ts",
-      status: "Ready"
+      status: "Ready",
     },
     {
       name: "Team Comparisons",
       description: "Compare performance between F1 teams",
       command: "analyzeTeams('Red Bull Racing', 'McLaren')",
-      status: "Ready"
+      status: "Ready",
     },
     {
       name: "Driver Performance Trends",
       description: "Analyze individual driver performance over seasons",
       command: "analyzeDriverTrends('Max Verstappen')",
-      status: "Ready"
+      status: "Ready",
     },
     {
       name: "RAG Q&A System",
       description: "Ask questions about F1 data using AI",
       command: "npm run answer",
-      status: "Ready"
+      status: "Ready",
     },
     {
       name: "Web UI",
       description: "Interactive web interface for F1 queries",
       command: "cd ui && npm run dev",
-      status: "Ready"
-    }
+      status: "Ready",
+    },
   ];
 
   features.forEach((feature) => {
@@ -349,7 +357,7 @@ function displayFeatures(): void {
 // Display technical architecture
 function displayArchitecture(): void {
   console.log("\nTECHNICAL ARCHITECTURE");
-  console.log("=" .repeat(50));
+  console.log("=".repeat(50));
 
   console.log("\nData Layer:");
   console.log("   • Real F1 CSV datasets (2022-2025 seasons)");
@@ -380,7 +388,7 @@ function displayArchitecture(): void {
 // Main system summary function
 async function runSystemSummary(): Promise<void> {
   console.log("F1 RAG AI - COMPREHENSIVE SYSTEM SUMMARY");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
   console.log("Generating complete system status report...\n");
 
   // Test all system components
@@ -413,11 +421,13 @@ async function runSystemSummary(): Promise<void> {
   displayArchitecture();
 
   // Final summary
-  console.log("\n" + "=" .repeat(60));
+  console.log("\n" + "=".repeat(60));
   console.log("SYSTEM SUMMARY COMPLETE");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
-  const workingComponents = statuses.filter(s => s.status === "Working").length;
+  const workingComponents = statuses.filter(
+    (s) => s.status === "Working",
+  ).length;
   const totalComponents = statuses.length;
 
   if (workingComponents === totalComponents) {
@@ -429,7 +439,9 @@ async function runSystemSummary(): Promise<void> {
     console.log("\nREADY FOR PRODUCTION USE");
   } else {
     console.log("Some system components need attention");
-    console.log(`   ${workingComponents}/${totalComponents} components operational`);
+    console.log(
+      `   ${workingComponents}/${totalComponents} components operational`,
+    );
     console.log("\nREQUIRES MAINTENANCE");
   }
 
@@ -438,7 +450,7 @@ async function runSystemSummary(): Promise<void> {
   console.log("   • QUICK_START.md - Quick start guide");
   console.log("   • Individual test scripts in src/ directory");
 
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 }
 
 // Export for use in other modules
