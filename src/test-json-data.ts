@@ -137,7 +137,7 @@ async function testDataQuality(): Promise<TestResult> {
     if (error) {
       return {
         test: "Data Quality",
-        status: "❌ Fail",
+        status: "Fail",
         details: `Failed to get statistics: ${error.message}`,
       };
     }
@@ -149,7 +149,7 @@ async function testDataQuality(): Promise<TestResult> {
     if (totalDocs === 0) {
       return {
         test: "Data Quality",
-        status: "❌ Fail",
+        status: "Fail",
         details: "No documents found in database",
       };
     }
@@ -163,7 +163,7 @@ async function testDataQuality(): Promise<TestResult> {
 
     return {
       test: "Data Quality",
-      status: totalDocs > 100 ? "✅ Pass" : "⚠️ Warning",
+      status: totalDocs > 100 ? "Pass" : "Warning",
       details: `${totalDocs} documents, ${categories} categories, ${seasons} seasons (${qualityScore} quality)`,
       data: stats,
       count: totalDocs,
@@ -171,7 +171,7 @@ async function testDataQuality(): Promise<TestResult> {
   } catch (error) {
     return {
       test: "Data Quality",
-      status: "❌ Fail",
+      status: "Fail",
       details: `Error assessing data quality: ${error}`,
     };
   }
@@ -203,21 +203,21 @@ async function testVectorSearch(): Promise<TestResult> {
     if (successfulSearches === searchQueries.length && avgResults >= 3) {
       return {
         test: "Vector Search",
-        status: "✅ Pass",
+        status: "Pass",
         details: `All ${searchQueries.length} searches successful, avg ${avgResults.toFixed(1)} results per query`,
         count: totalResults,
       };
     } else if (successfulSearches >= searchQueries.length * 0.5) {
       return {
         test: "Vector Search",
-        status: "⚠️ Warning",
+        status: "Warning",
         details: `${successfulSearches}/${searchQueries.length} searches successful`,
         count: totalResults,
       };
     } else {
       return {
         test: "Vector Search",
-        status: "❌ Fail",
+        status: "Fail",
         details: `Only ${successfulSearches}/${searchQueries.length} searches successful`,
         count: totalResults,
       };
@@ -225,7 +225,7 @@ async function testVectorSearch(): Promise<TestResult> {
   } catch (error) {
     return {
       test: "Vector Search",
-      status: "❌ Fail",
+      status: "Fail",
       details: `Vector search failed: ${error}`,
     };
   }
@@ -279,14 +279,14 @@ async function testDataCategorization(): Promise<TestResult> {
     if (categoriesWithData >= 4 && seasonsWithData >= 2) {
       return {
         test: "Data Categorization",
-        status: "✅ Pass",
+        status: "Pass",
         details: `${categoriesWithData} categories and ${seasonsWithData} seasons have data`,
         data: categorizedResults,
       };
     } else {
       return {
         test: "Data Categorization",
-        status: "⚠️ Warning",
+        status: "Warning",
         details: `${categoriesWithData} categories and ${seasonsWithData} seasons have data`,
         data: categorizedResults,
       };
@@ -294,7 +294,7 @@ async function testDataCategorization(): Promise<TestResult> {
   } catch (error) {
     return {
       test: "Data Categorization",
-      status: "❌ Fail",
+      status: "Fail",
       details: `Categorization test failed: ${error}`,
     };
   }
@@ -351,21 +351,21 @@ async function testF1DataIntegrity(): Promise<TestResult> {
     if (integrityScore >= 0.8) {
       return {
         test: "F1 Data Integrity",
-        status: "✅ Pass",
+        status: "Pass",
         details: `High integrity: ${foundDrivers}/${keyDrivers.length} drivers, ${foundTeams}/${keyTeams.length} teams, ${validRaceResults}/${raceResults.length} valid race results`,
         data: { foundDrivers, foundTeams, validRaceResults },
       };
     } else if (integrityScore >= 0.5) {
       return {
         test: "F1 Data Integrity",
-        status: "⚠️ Warning",
+        status: "Warning",
         details: `Medium integrity: ${foundDrivers}/${keyDrivers.length} drivers, ${foundTeams}/${keyTeams.length} teams`,
         data: { foundDrivers, foundTeams, validRaceResults },
       };
     } else {
       return {
         test: "F1 Data Integrity",
-        status: "❌ Fail",
+        status: "Fail",
         details: `Low integrity: Missing key F1 entities`,
         data: { foundDrivers, foundTeams, validRaceResults },
       };
@@ -373,7 +373,7 @@ async function testF1DataIntegrity(): Promise<TestResult> {
   } catch (error) {
     return {
       test: "F1 Data Integrity",
-      status: "❌ Fail",
+      status: "Fail",
       details: `Integrity test failed: ${error}`,
     };
   }
@@ -408,21 +408,21 @@ async function testJSONMetadata(): Promise<TestResult> {
     if (metadataScore >= 0.9 && jsonSources === samples?.length) {
       return {
         test: "JSON Metadata",
-        status: "✅ Pass",
+        status: "Pass",
         details: `${validMetadata}/${samples?.length} documents have valid metadata, all from JSON sources`,
         count: validMetadata,
       };
     } else if (metadataScore >= 0.7) {
       return {
         test: "JSON Metadata",
-        status: "⚠️ Warning",
+        status: "Warning",
         details: `${validMetadata}/${samples?.length} documents have valid metadata`,
         count: validMetadata,
       };
     } else {
       return {
         test: "JSON Metadata",
-        status: "❌ Fail",
+        status: "Fail",
         details: `Poor metadata preservation: ${validMetadata}/${samples?.length}`,
         count: validMetadata,
       };
@@ -430,7 +430,7 @@ async function testJSONMetadata(): Promise<TestResult> {
   } catch (error) {
     return {
       test: "JSON Metadata",
-      status: "❌ Fail",
+      status: "Fail",
       details: `Metadata test failed: ${error}`,
     };
   }
@@ -493,7 +493,7 @@ async function testAdvancedAnalytics(): Promise<TestResult> {
     if (successfulTests === analyticsTests.length && totalResults >= 15) {
       return {
         test: "Advanced Analytics",
-        status: "✅ Pass",
+        status: "Pass",
         details: `All ${analyticsTests.length} analytics types working, ${totalResults} total results`,
         data: analyticsTests,
       };
