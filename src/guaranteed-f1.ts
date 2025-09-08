@@ -677,12 +677,12 @@ if (require.main === module) {
   guaranteedF1Ingestion(options)
     .then((stats) => {
       console.log(
-        `\n✅ Ingestion completed with ${stats.documentsInserted} documents inserted`,
+        `\nIngestion completed with ${stats.documentsInserted} documents inserted`,
       );
       process.exit(stats.errors.length > 0 ? 1 : 0);
     })
     .catch((error) => {
-      console.error("\n❌ Ingestion failed:", error);
+      console.error("\nIngestion failed:", error);
       process.exit(1);
     });
 }
