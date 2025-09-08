@@ -385,7 +385,7 @@ export async function testBedrockConnection(): Promise<{
     return { status, details };
   } catch (error) {
     details.error = error instanceof Error ? error.message : String(error);
-    console.error("❌ Bedrock connection test failed:", details.error);
+    console.error("Bedrock connection test failed:", details.error);
     return { status: "unhealthy", details };
   }
 }
