@@ -500,14 +500,14 @@ async function testAdvancedAnalytics(): Promise<TestResult> {
     } else if (successfulTests >= 3) {
       return {
         test: "Advanced Analytics",
-        status: "⚠️ Warning",
+        status: "Warning",
         details: `${successfulTests}/${analyticsTests.length} analytics types working`,
         data: analyticsTests,
       };
     } else {
       return {
         test: "Advanced Analytics",
-        status: "❌ Fail",
+        status: "Fail",
         details: `Only ${successfulTests}/${analyticsTests.length} analytics types working`,
         data: analyticsTests,
       };
@@ -515,7 +515,7 @@ async function testAdvancedAnalytics(): Promise<TestResult> {
   } catch (error) {
     return {
       test: "Advanced Analytics",
-      status: "❌ Fail",
+      status: "Fail",
       details: `Analytics test failed: ${error}`,
     };
   }
@@ -564,7 +564,7 @@ async function getDatabaseStatistics(): Promise<DatabaseStats | null> {
 
 // Display test results
 function displayTestResults(results: TestResult[]): void {
-  console.log("\n🏎️ F1 JSON DATA TEST RESULTS");
+  console.log("\nF1 JSON DATA TEST RESULTS");
   console.log("=".repeat(60));
 
   results.forEach((result, index) => {
@@ -575,53 +575,53 @@ function displayTestResults(results: TestResult[]): void {
     }
   });
 
-  const passCount = results.filter((r) => r.status === "✅ Pass").length;
-  const warnCount = results.filter((r) => r.status === "⚠️ Warning").length;
-  const failCount = results.filter((r) => r.status === "❌ Fail").length;
+  const passCount = results.filter((r) => r.status === "Pass").length;
+  const warnCount = results.filter((r) => r.status === "Warning").length;
+  const failCount = results.filter((r) => r.status === "Fail").length;
 
   console.log("\n" + "=".repeat(60));
   console.log(
-    `📊 TEST SUMMARY: ${passCount} Pass | ${warnCount} Warning | ${failCount} Fail`,
+    `TEST SUMMARY: ${passCount} Pass | ${warnCount} Warning | ${failCount} Fail`,
   );
 
   if (failCount === 0 && warnCount <= 1) {
-    console.log("🎉 EXCELLENT: JSON data system is working optimally!");
+    console.log("EXCELLENT: JSON data system is working optimally!");
   } else if (failCount === 0) {
-    console.log("✅ GOOD: JSON data system is working well with minor issues");
+    console.log("GOOD: JSON data system is working well with minor issues");
   } else if (failCount <= 2) {
     console.log(
-      "⚠️ ISSUES: JSON data system has some problems that need attention",
+      "ISSUES: JSON data system has some problems that need attention",
     );
   } else {
     console.log(
-      "❌ CRITICAL: JSON data system has major issues requiring immediate fixes",
+      "CRITICAL: JSON data system has major issues requiring immediate fixes",
     );
   }
 }
 
 // Display database statistics
 function displayDatabaseStatistics(stats: DatabaseStats): void {
-  console.log("\n📊 DATABASE STATISTICS");
+  console.log("\nDATABASE STATISTICS");
   console.log("=".repeat(60));
 
-  console.log(`📈 Total Documents: ${stats.totalDocuments.toLocaleString()}`);
+  console.log(`Total Documents: ${stats.totalDocuments.toLocaleString()}`);
 
-  console.log("\n📂 Documents by Category:");
+  console.log("\nDocuments by Category:");
   Object.entries(stats.categories)
     .sort(([, a], [, b]) => b - a)
     .forEach(([category, count]) => {
       console.log(`   ${category}: ${count.toLocaleString()}`);
     });
 
-  console.log("\n📅 Documents by Season:");
+  console.log("\nDocuments by Season:");
   Object.entries(stats.seasons)
     .sort(([a], [b]) => b.localeCompare(a))
     .forEach(([season, count]) => {
       console.log(`   ${season}: ${count.toLocaleString()}`);
     });
 
-  console.log(`\n🏁 Teams Available: ${stats.teams.length}`);
-  console.log(`🏎️ Drivers Available: ${stats.drivers.length}`);
+  console.log(`\nTeams Available: ${stats.teams.length}`);
+  console.log(`Drivers Available: ${stats.drivers.length}`);
 
   if (stats.teams.length > 0) {
     console.log(
@@ -638,7 +638,7 @@ function displayDatabaseStatistics(stats: DatabaseStats): void {
 
 // Sample queries demonstration
 async function demonstrateSampleQueries(): Promise<void> {
-  console.log("\n🔍 SAMPLE QUERY DEMONSTRATIONS");
+  console.log("\nSAMPLE QUERY DEMONSTRATIONS");
   console.log("=".repeat(60));
 
   const sampleQueries = [
@@ -669,7 +669,7 @@ async function demonstrateSampleQueries(): Promise<void> {
   ];
 
   for (const sample of sampleQueries) {
-    console.log(`\n🎯 ${sample.title}`);
+    console.log(`\n${sample.title}`);
     console.log(`   Query: "${sample.query}"`);
 
     try {
