@@ -252,7 +252,7 @@ function createDescriptiveText(
         return createGenericDescription(record, category, season);
     }
   } catch (error) {
-    console.warn(`   ⚠️ Error creating description for ${category}:`, error);
+    console.warn(`   Error creating description for ${category}:`, error);
     return createFallbackDescription(record, category, season, filename);
   }
 }
@@ -387,11 +387,11 @@ async function processJSONFile(
   const filePath = path.join("formula1-datasets", config.filename);
 
   if (!fs.existsSync(filePath)) {
-    console.log(`   ⚠️ File not found: ${config.filename}`);
+    console.log(`   File not found: ${config.filename}`);
     return { processed: 0, successful: 0, failed: 0 };
   }
 
-  console.log(`\n📂 Processing: ${config.filename}`);
+  console.log(`\nProcessing: ${config.filename}`);
   console.log(`   Category: ${config.category}`);
   console.log(`   Season: ${config.season}`);
   console.log(`   Priority: ${config.priority}`);
