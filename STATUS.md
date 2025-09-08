@@ -1,24 +1,24 @@
 # F1 RAG AI Cloud - Current Status
 
-## 🎯 **CURRENT SETUP STATUS**
+## CURRENT SETUP STATUS
 
-### ✅ **What's Working (95% Complete)**
-- **Supabase Database**: ✅ Connected and configured
+### What's Working (95% Complete)
+- **Supabase Database**: Connected and configured
   - URL: https://ukygqtisuqpyxfadqdkk.supabase.co
   - Tables created with SQL setup
   - Vector search functions installed
   - pgvector extension enabled
-- **Codebase**: ✅ Fully updated with Zod validation
-- **Dependencies**: ✅ All packages installed
-- **F1 Data**: ✅ 40+ CSV files ready (2019-2025)
-- **Environment**: ✅ Properly configured
+- **Codebase**: Fully updated with Zod validation
+- **Dependencies**: All packages installed
+- **F1 Data**: 40+ CSV files ready (2019-2025)
+- **Environment**: Properly configured
 
-### ❌ **What's Missing (5% - Final Step)**
+### What's Missing (5% - Final Step)
 - **AWS Credentials**: Need real AWS access keys in .env file
   - Currently has placeholder values: `AKIA...` and `...`
   - Need actual AWS credentials for Bedrock access
 
-## 🚧 **IMMEDIATE NEXT STEP**
+## IMMEDIATE NEXT STEP
 
 **You need to add your real AWS credentials to the .env file:**
 
@@ -30,21 +30,21 @@
    AWS_SECRET_ACCESS_KEY=[your_real_secret_here]
    ```
 
-## 🧪 **Test Results**
+## Test Results
 
-### Supabase Connection: ✅ WORKING
+### Supabase Connection: WORKING
 ```
-✅ Database connection successful!
-✅ Tables exist and accessible
-✅ Functions and schema properly set up
-```
-
-### AWS Bedrock: ❌ NEEDS CREDENTIALS
-```
-❌ Embedding error: Resolved credential object is not valid
+Database connection successful!
+Tables exist and accessible
+Functions and schema properly set up
 ```
 
-## 🏁 **Once AWS Credentials Are Added**
+### AWS Bedrock: NEEDS CREDENTIALS
+```
+Embedding error: Resolved credential object is not valid
+```
+
+## Once AWS Credentials Are Added
 
 After updating AWS credentials, run:
 
@@ -59,7 +59,7 @@ npm run ingest
 cd ui && npm run dev
 ```
 
-## 🎉 **What You'll Get**
+## What You'll Get
 
 - **Vector Search**: Similarity search with AWS Bedrock embeddings
 - **Chat Interface**: Ask questions about F1 data
@@ -67,7 +67,7 @@ cd ui && npm run dev
 - **Modern UI**: Next.js with glassmorphism design
 - **Type Safety**: Full Zod validation
 
-## 📋 **Example Questions You Can Ask**
+## Example Questions You Can Ask
 
 Once running:
 - "Who won the 2024 Formula 1 championship?"
@@ -75,7 +75,7 @@ Once running:
 - "Tell me about Max Verstappen's statistics"
 - "What were the results from the Monaco Grand Prix?"
 
-## 🆘 **If You Need Help Getting AWS Credentials**
+## If You Need Help Getting AWS Credentials
 
 1. **Create AWS Account** (if needed)
 2. **Go to IAM Console** → Users
@@ -96,7 +96,7 @@ Once running:
    ```
 4. **Generate access keys** → Copy to .env file
 
-## 🚀 **System Architecture**
+## System Architecture
 
 Your F1 RAG AI system includes:
 - **Database**: Supabase with pgvector for similarity search
@@ -106,4 +106,4 @@ Your F1 RAG AI system includes:
 - **Validation**: Zod schemas for type safety
 - **Data**: Formula 1 datasets 2019-2025
 
-**You're 95% there! Just need those AWS credentials and you'll have a fully functional F1 RAG AI system! 🏎️**
+**You're 95% there! Just need those AWS credentials and you'll have a fully functional F1 RAG AI system!**
