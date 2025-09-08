@@ -123,7 +123,7 @@ async function readCSVFile(
     const results: any[] = [];
     let rowCount = 0;
 
-    console.log(`   📖 Reading CSV file: ${path.basename(filePath)}`);
+    console.log(`   Reading CSV file: ${path.basename(filePath)}`);
 
     const stream = fs
       .createReadStream(filePath, {
@@ -149,11 +149,11 @@ async function readCSVFile(
         }
       })
       .on("end", () => {
-        console.log(`   ✅ Read ${results.length} valid rows from CSV`);
+        console.log(`   Read ${results.length} valid rows from CSV`);
         resolve(results);
       })
       .on("error", (error) => {
-        console.error(`   ❌ CSV reading error: ${error.message}`);
+        console.error(`   CSV reading error: ${error.message}`);
         reject(error);
       });
   });
@@ -249,7 +249,7 @@ function createDescriptiveText(
         return `Formula 1 ${category} data from ${season}: ${description}.`;
     }
   } catch (error) {
-    console.warn(`   ⚠️ Error creating descriptive text: ${error}`);
+    console.warn(`   Error creating descriptive text: ${error}`);
 
     // Fallback to simple text creation
     const values = Object.keys(row)
@@ -301,13 +301,13 @@ async function processCSVFile(
     errors: [] as string[],
   };
 
-  console.log(`\n📂 Processing: ${fileConfig.filename}`);
+  console.log(`\nProcessing: ${fileConfig.filename}`);
   console.log(`   Category: ${fileConfig.category}`);
   console.log(`   Season: ${fileConfig.season}`);
 
   if (!fs.existsSync(filePath)) {
     const error = `File not found: ${fileConfig.filename}`;
-    console.log(`   ❌ ${error}`);
+    console.log(`   ${error}`);
     stats.errors.push(error);
     return { documents: [], stats };
   }
