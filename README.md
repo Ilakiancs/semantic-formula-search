@@ -156,31 +156,31 @@ The system provides comprehensive team performance analysis with validated data:
 
 ## Key Improvements
 
-### 🛡️ Type Safety & Validation
+### Type Safety & Validation
 - **Zod schemas** for all data structures
 - **Runtime validation** for API requests/responses
 - **Environment variable validation** with helpful error messages
 - **CSV data normalization** with error handling
 
-### 🗄️ Flexible Database Support
+### Flexible Database Support
 - **Supabase** with PostgreSQL + pgvector (recommended)
 - **DataStax Astra DB** as alternative
 - **Unified interface** - switch databases without code changes
 - **Health monitoring** and connection testing
 
-### 🤖 Pure Bedrock Integration
+### Pure Bedrock Integration
 - **No OpenRouter dependency** - AWS Bedrock only
 - **Multiple model support** (Claude, Llama, Cohere)
 - **Embedding generation** with batch processing
 - **Error handling** and fallback strategies
 
-### 📊 Enhanced Data Processing
+### Enhanced Data Processing
 - **Batch ingestion** with configurable parameters
 - **Validation-only mode** for testing
 - **Comprehensive logging** and progress tracking
 - **CSV file validation** and error reporting
 
-### 🔍 Production Features
+### Production Features
 - **Health checks** for all system components
 - **Comprehensive setup verification**
 - **Error boundaries** and graceful degradation
