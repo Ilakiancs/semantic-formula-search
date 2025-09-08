@@ -2,13 +2,13 @@
 
 This checklist will guide you through setting up your F1 RAG AI Cloud system step by step.
 
-## 📋 Pre-Setup Requirements
+## Pre-Setup Requirements
 
 - [ ] Node.js 18+ installed
 - [ ] Git repository cloned
 - [ ] Dependencies installed (`npm install`)
 
-## 🔐 Step 1: AWS Setup (Required)
+## Step 1: AWS Setup (Required)
 
 ### 1.1 Create AWS Account & Enable Bedrock
 - [ ] AWS account created/available
@@ -47,7 +47,7 @@ This checklist will guide you through setting up your F1 RAG AI Cloud system ste
 - [ ] Copy secret access key to `.env` → `AWS_SECRET_ACCESS_KEY`
 - [ ] Verify region is set to `ap-southeast-1`
 
-## 🗄️ Step 2: Database Setup (Choose ONE option)
+## Step 2: Database Setup (Choose ONE option)
 
 ### Option A: Supabase Setup (Recommended)
 
@@ -94,21 +94,21 @@ CREATE EXTENSION IF NOT EXISTS vector;
 - [ ] Update `.env` with Astra credentials
 - [ ] Set `USE_SUPABASE=false`
 
-## 🧪 Step 3: Verify Setup
+## Step 3: Verify Setup
 
 ### 3.1 Test Configuration
 - [ ] Run: `npm run check-setup`
-- [ ] ✅ All AWS checks should pass
-- [ ] ✅ Database connection should work
+- [ ] All AWS checks should pass
+- [ ] Database connection should work
 - [ ] Fix any errors before proceeding
 
 ### 3.2 Test System Components
 - [ ] Run: `npm run test-system`
-- [ ] ✅ Embedding generation should work
-- [ ] ✅ Chat generation should work
-- [ ] ✅ Database operations should work
+- [ ] Embedding generation should work
+- [ ] Chat generation should work
+- [ ] Database operations should work
 
-## 📊 Step 4: Load F1 Data
+## Step 4: Load F1 Data
 
 ### 4.1 Verify Data Files
 - [ ] Check `formula1-datasets/` folder exists
@@ -132,7 +132,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 - [ ] Run: `npm run check-setup` again
 - [ ] Data ingestion status should show documents count > 0
 
-## 🚀 Step 5: Start the Application
+## Step 5: Start the Application
 
 ### 5.1 Start Backend Services
 - [ ] Verify all previous steps completed
@@ -150,7 +150,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 - [ ] Sources should be shown
 - [ ] Response should be relevant
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### AWS Issues
 - **"Security token invalid"**: Check AWS credentials in `.env`
@@ -172,7 +172,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 - **"No response"**: Check chat API endpoint
 - **"Network errors"**: Verify localhost:3000 is accessible
 
-## ✅ Final Verification
+## Final Verification
 
 Run this complete test sequence:
 
@@ -195,18 +195,18 @@ cd ui && npm run dev
 
 All commands should complete successfully!
 
-## 🎯 Success Criteria
+## Success Criteria
 
 Your setup is complete when:
 
-- [ ] ✅ `npm run check-setup` shows all green checkmarks
-- [ ] ✅ `npm run test-system` passes all tests
-- [ ] ✅ UI loads at `http://localhost:3000`
-- [ ] ✅ Can ask F1 questions and get responses
-- [ ] ✅ Sources are displayed with answers
-- [ ] ✅ No major errors in console/logs
+- [ ] `npm run check-setup` shows all green checkmarks
+- [ ] `npm run test-system` passes all tests
+- [ ] UI loads at `http://localhost:3000`
+- [ ] Can ask F1 questions and get responses
+- [ ] Sources are displayed with answers
+- [ ] No major errors in console/logs
 
-## 📞 Getting Help
+## Getting Help
 
 If you encounter issues:
 
@@ -216,7 +216,7 @@ If you encounter issues:
 4. **Environment file**: Verify all credentials are correct
 5. **Network**: Ensure internet connection for AWS/Supabase
 
-## 🚀 What's Next?
+## What's Next?
 
 Once setup is complete:
 
@@ -226,4 +226,4 @@ Once setup is complete:
 - Inquire about race results: "What were the results from Monaco?"
 - Test season comparisons: "How did 2024 compare to 2023?"
 
-Your F1 RAG AI system is now ready to answer Formula 1 questions! 🏎️
+Your F1 RAG AI system is now ready to answer Formula 1 questions!
