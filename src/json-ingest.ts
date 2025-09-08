@@ -263,8 +263,12 @@ function createDriverDescription(driver: any, season: string): string {
   const country = driver.Country || driver.Nationality || "Unknown Country";
   const points = parseFloat(driver.Points || driver.points || 0);
   const podiums = parseInt(driver.Podiums || driver.podiums || 0);
-  const championships = parseInt(driver["World Championships"] || driver.championships || 0);
-  const grandsPrix = parseInt(driver["Grands Prix Entered"] || driver.grandsPrix || 0);
+  const championships = parseInt(
+    driver["World Championships"] || driver.championships || 0,
+  );
+  const grandsPrix = parseInt(
+    driver["Grands Prix Entered"] || driver.grandsPrix || 0,
+  );
 
   return `${name} is a Formula 1 driver from ${country} racing for ${team} in the ${season} season. He has scored ${points} championship points with ${podiums} podium finishes throughout his career. ${name} has won ${championships} world championships and has participated in ${grandsPrix} Grand Prix races. In ${season}, he represents ${team} and continues to compete at the highest level of motorsport.`;
 }
@@ -275,7 +279,9 @@ function createTeamDescription(team: any, season: string): string {
   const base = team.Base || team.base || "Unknown Location";
   const teamChief = team["Team Chief"] || team.teamChief || "Unknown";
   const powerUnit = team["Power Unit"] || team.powerUnit || "Unknown";
-  const championships = parseInt(team["World Championships"] || team.championships || 0);
+  const championships = parseInt(
+    team["World Championships"] || team.championships || 0,
+  );
   const firstEntry = team["First Team Entry"] || team.firstEntry || "Unknown";
 
   return `${teamName} (${fullName}) is a Formula 1 constructor based in ${base} competing in the ${season} season. The team is led by ${teamChief} and uses ${powerUnit} power units. ${teamName} has won ${championships} world championships since their first entry in ${firstEntry}. The team continues to develop competitive machinery and compete for wins in the ${season} Formula 1 World Championship.`;
@@ -289,11 +295,17 @@ function createRaceResultDescription(result: any, season: string): string {
   const points = parseFloat(result.Points || result.points || 0);
   const laps = parseInt(result.Laps || result.laps || 0);
   const time = result["Time/Retired"] || result.Time || result.time || "N/A";
-  const fastestLap = result["Set Fastest Lap"] === "Yes" || result["Fastest Lap"] === "Yes" || result.fastestLap;
+  const fastestLap =
+    result["Set Fastest Lap"] === "Yes" ||
+    result["Fastest Lap"] === "Yes" ||
+    result.fastestLap;
 
-  const positionText = position === "DNF" ? "did not finish" :
-                     position === "DSQ" ? "was disqualified" :
-                     `finished in position ${position}`;
+  const positionText =
+    position === "DNF"
+      ? "did not finish"
+      : position === "DSQ"
+        ? "was disqualified"
+        : `finished in position ${position}`;
 
   return `In the ${season} Formula 1 season at the ${track} Grand Prix, ${driver} driving for ${team} ${positionText}${points > 0 ? ` and scored ${points} championship points` : ""}. The driver completed ${laps} laps${time !== "N/A" ? ` with a race time of ${time}` : ""}${fastestLap ? " and set the fastest lap of the race" : ""}. This result contributes to both the driver's and constructor's championship standings for the ${season} season.`;
 }
@@ -339,13 +351,22 @@ function createCalendarDescription(event: any, season: string): string {
   return `Round ${round} of the ${season} Formula 1 World Championship is the ${race} held at ${track} in ${country} on ${date}. This race is part of the official ${season} Formula 1 calendar and contributes to both the Drivers' and Constructors' Championships.`;
 }
 
-function createGenericDescription(record: any, category: string, season: string): string {
+function createGenericDescription(
+  record: any,
+  category: string,
+  season: string,
+): string {
   const keys = Object.keys(record).slice(0, 3);
-  const values = keys.map(key => `${key}: ${record[key]}`).join(", ");
+  const values = keys.map((key) => `${key}: ${record[key]}`).join(", ");
   return `Formula 1 ${category} data from the ${season} season containing information about ${values}. This data contributes to the comprehensive Formula 1 database for analysis and insights.`;
 }
 
-function createFallbackDescription(record: any, category: string, season: string, filename: string): string {
+function createFallbackDescription(
+  record: any,
+  category: string,
+  season: string,
+  filename: string,
+): string {
   return `Formula 1 ${category} information from the ${season} season (source: ${filename}). This record contains structured data about Formula 1 ${category} for comprehensive analysis and research purposes.`;
 }
 
@@ -382,20 +403,24 @@ async function processJSONFile(
     const records = JSON.parse(jsonContent);
 
     if (!Array.isArray(records)) {
-      console.log(`   ❌ Invalid JSON format: expected array`);
+      console.log(`   Invalid JSON format: expected array`);
       return { processed: 0, successful: 0, failed: 0 };
     }
 
-    console.log(`   📖 Read ${records.length} records from JSON`);
+    console.log(`   Read ${records.length} records from JSON`);
 
     if (options.validateOnly) {
-      console.log(`   ✅ Validation only - skipping ingestion`);
-      return { processed: records.length, successful: records.length, failed: 0 };
+      console.log(`   Validation only - skipping ingestion`);
+      return {
+        processed: records.length,
+        successful: records.length,
+        failed: 0,
+      };
     }
 
     // Limit records if specified
     const recordsToProcess = records.slice(0, options.maxRecordsPerFile);
-    console.log(`   🔄 Processing ${recordsToProcess.length} records...`);
+    console.log(`   Processing ${recordsToProcess.length} records...`);
 
     let successful = 0;
     let failed = 0;
@@ -407,7 +432,12 @@ async function processJSONFile(
       for (const record of batch) {
         try {
           // Create descriptive text
-          const description = createDescriptiveText(record, config.category, config.season, config.filename);
+          const description = createDescriptiveText(
+            record,
+            config.category,
+            config.season,
+            config.filename,
+          );
 
           // Generate embedding
           const embedding = await generateEmbedding(description);
@@ -422,47 +452,55 @@ async function processJSONFile(
             track: record.Track || record.track || null,
             driver: record.Driver || record.driver || null,
             team: record.Team || record.team || null,
-            position: record.Position ? parseInt(record.Position) || null : null,
+            position: record.Position
+              ? parseInt(record.Position) || null
+              : null,
             points: record.Points ? parseFloat(record.Points) || null : null,
             metadata: record,
           };
 
           // Insert into Supabase
-          const { error } = await supabase.from("f1_documents").insert(document);
+          const { error } = await supabase
+            .from("f1_documents")
+            .insert(document);
 
           if (error) {
-            console.log(`   ⚠️ Insert error: ${error.message}`);
+            console.log(`   Insert error: ${error.message}`);
             failed++;
           } else {
             successful++;
             if (successful % 10 === 0) {
-              console.log(`   ✅ Processed ${successful}/${recordsToProcess.length} records...`);
+              console.log(
+                `   Processed ${successful}/${recordsToProcess.length} records...`,
+              );
             }
           }
 
           // Add delay to avoid rate limiting
           if (options.embeddingDelay > 0) {
-            await new Promise((resolve) => setTimeout(resolve, options.embeddingDelay));
+            await new Promise((resolve) =>
+              setTimeout(resolve, options.embeddingDelay),
+            );
           }
-
         } catch (error) {
-          console.log(`   ⚠️ Record processing error: ${error}`);
+          console.log(`   Record processing error: ${error}`);
           failed++;
         }
       }
     }
 
-    console.log(`   ✅ Completed: ${successful} successful, ${failed} failed`);
+    console.log(`   Completed: ${successful} successful, ${failed} failed`);
     return { processed: recordsToProcess.length, successful, failed };
-
   } catch (error) {
-    console.log(`   ❌ File processing error: ${error}`);
+    console.log(`   File processing error: ${error}`);
     return { processed: 0, successful: 0, failed: 0 };
   }
 }
 
 // Main ingestion function
-async function ingestJSONData(options: Partial<IngestionOptions> = {}): Promise<void> {
+async function ingestJSONData(
+  options: Partial<IngestionOptions> = {},
+): Promise<void> {
   const defaultOptions: IngestionOptions = {
     maxRecordsPerFile: 50,
     priorityThreshold: 3,
@@ -474,9 +512,9 @@ async function ingestJSONData(options: Partial<IngestionOptions> = {}): Promise<
 
   const finalOptions = { ...defaultOptions, ...options };
 
-  console.log("🚀 F1 JSON DATA INGESTION SYSTEM");
+  console.log("F1 JSON DATA INGESTION SYSTEM");
   console.log("================================");
-  console.log(`📋 Configuration:`);
+  console.log(`Configuration:`);
   console.log(`   Max records per file: ${finalOptions.maxRecordsPerFile}`);
   console.log(`   Priority threshold: ${finalOptions.priorityThreshold}`);
   console.log(`   Batch size: ${finalOptions.batchSize}`);
@@ -500,7 +538,8 @@ async function ingestJSONData(options: Partial<IngestionOptions> = {}): Promise<
     let filesToProcess = JSON_FILES.filter((config) => {
       if (!config.enabled) return false;
       if (config.priority > finalOptions.priorityThreshold) return false;
-      if (!finalOptions.includeHistorical && parseInt(config.season) < 2022) return false;
+      if (!finalOptions.includeHistorical && parseInt(config.season) < 2022)
+        return false;
       return true;
     });
 
@@ -508,7 +547,7 @@ async function ingestJSONData(options: Partial<IngestionOptions> = {}): Promise<
     filesToProcess.sort((a, b) => a.priority - b.priority);
 
     stats.totalFiles = filesToProcess.length;
-    console.log(`\n📁 Processing ${stats.totalFiles} JSON files...\n`);
+    console.log(`\nProcessing ${stats.totalFiles} JSON files...\n`);
 
     // Process each file
     for (const fileConfig of filesToProcess) {
@@ -527,16 +566,26 @@ async function ingestJSONData(options: Partial<IngestionOptions> = {}): Promise<
     stats.processingTime = Date.now() - startTime;
 
     // Final statistics
-    console.log("\n🎉 JSON INGESTION COMPLETE!");
+    console.log("\nJSON INGESTION COMPLETE!");
     console.log("================================");
-    console.log(`📊 Processing Statistics:`);
-    console.log(`   Files processed: ${stats.processedFiles}/${stats.totalFiles}`);
+    console.log(`Processing Statistics:`);
+    console.log(
+      `   Files processed: ${stats.processedFiles}/${stats.totalFiles}`,
+    );
     console.log(`   Files skipped: ${stats.skippedFiles}`);
     console.log(`   Total records: ${stats.totalRecords.toLocaleString()}`);
-    console.log(`   Successful insertions: ${stats.successfulRecords.toLocaleString()}`);
-    console.log(`   Failed insertions: ${stats.failedRecords.toLocaleString()}`);
-    console.log(`   Success rate: ${((stats.successfulRecords / stats.totalRecords) * 100).toFixed(1)}%`);
-    console.log(`   Processing time: ${(stats.processingTime / 1000).toFixed(1)} seconds`);
+    console.log(
+      `   Successful insertions: ${stats.successfulRecords.toLocaleString()}`,
+    );
+    console.log(
+      `   Failed insertions: ${stats.failedRecords.toLocaleString()}`,
+    );
+    console.log(
+      `   Success rate: ${((stats.successfulRecords / stats.totalRecords) * 100).toFixed(1)}%`,
+    );
+    console.log(
+      `   Processing time: ${(stats.processingTime / 1000).toFixed(1)} seconds`,
+    );
 
     if (!finalOptions.validateOnly) {
       // Verify final database state
@@ -545,12 +594,13 @@ async function ingestJSONData(options: Partial<IngestionOptions> = {}): Promise<
         .select("*", { count: "exact", head: true });
 
       if (!error) {
-        console.log(`   Total documents in database: ${count?.toLocaleString()}`);
+        console.log(
+          `   Total documents in database: ${count?.toLocaleString()}`,
+        );
       }
     }
-
   } catch (error) {
-    console.error("❌ Ingestion failed:", error);
+    console.error("Ingestion failed:", error);
   }
 }
 
