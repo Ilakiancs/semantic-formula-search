@@ -54,7 +54,7 @@ function initializeSupabase(): SupabaseClient {
     const dbConfig = getDatabaseConfig();
     if (dbConfig.type === "supabase") {
       supabase = createClient(dbConfig.url, dbConfig.anonKey);
-      console.log("✅ Supabase client initialized");
+      console.log("Supabase client initialized");
     }
   }
 
@@ -84,14 +84,14 @@ export function isSupabaseAvailable(): boolean {
 // Database initialization
 export async function initializeDatabase(): Promise<void> {
   if (!isSupabaseAvailable()) {
-    console.log("⚠️ Supabase not configured, skipping database initialization");
+    console.log("Supabase not configured, skipping database initialization");
     return;
   }
 
   const client = getSupabaseClient();
 
   try {
-    console.log("🔄 Initializing Supabase database...");
+    console.log("Initializing Supabase database...");
 
     // Check if the f1_documents table exists
     const { data: tables, error: tablesError } = await client
@@ -100,7 +100,7 @@ export async function initializeDatabase(): Promise<void> {
       .limit(1);
 
     if (tablesError && tablesError.code === "42P01") {
-      console.log("📝 Creating f1_documents table...");
+      console.log("Creating f1_documents table...");
       console.log("Please run the SQL setup in your Supabase dashboard:");
       console.log(getSQLSetup());
       throw new Error(
@@ -108,9 +108,9 @@ export async function initializeDatabase(): Promise<void> {
       );
     }
 
-    console.log("✅ Database initialized successfully");
+    console.log("Database initialized successfully");
   } catch (error) {
-    console.error("❌ Database initialization failed:", error);
+    console.error("Database initialization failed:", error);
     throw error;
   }
 }
@@ -141,15 +141,13 @@ export async function insertF1Documents(
   }
 
   if (errors.length > 0) {
-    console.warn("⚠️ Validation errors:", errors);
+    console.warn("Validation errors:", errors);
     if (validatedDocuments.length === 0) {
       throw new Error(`All documents failed validation: ${errors.join("; ")}`);
     }
   }
 
-  console.log(
-    `📝 Inserting ${validatedDocuments.length} validated documents...`,
-  );
+  console.log(`Inserting ${validatedDocuments.length} validated documents...`);
 
   // Transform for Supabase insertion
   const supabaseDocuments = validatedDocuments.map((doc) => ({
@@ -173,7 +171,7 @@ export async function insertF1Documents(
     .select();
 
   if (error) {
-    console.error("❌ Error inserting documents:", error);
+    console.error("Error inserting documents:", error);
     throw new Error(`Failed to insert documents: ${error.message}`);
   }
 
@@ -186,7 +184,7 @@ export async function insertF1Documents(
     SupabaseF1DocumentSchema.parse(doc),
   );
 
-  console.log(`✅ Successfully inserted ${validatedResults.length} documents`);
+  console.log(`Successfully inserted ${validatedResults.length} documents`);
   return validatedResults;
 }
 
@@ -203,7 +201,7 @@ export async function searchF1Documents(
   const client = getSupabaseClient();
 
   console.log(
-    `🔍 Searching for: "${validatedQuery.query}" (limit: ${validatedQuery.limit})`,
+    `Searching for: "${validatedQuery.query}" (limit: ${validatedQuery.limit})`,
   );
 
   try {
@@ -218,7 +216,7 @@ export async function searchF1Documents(
     });
 
     if (error) {
-      console.error("❌ Search error:", error);
+      console.error("Search error:", error);
       throw new Error(`Search failed: ${error.message}`);
     }
 
@@ -232,10 +230,10 @@ export async function searchF1Documents(
       SearchResultSchema.parse(item),
     );
 
-    console.log(`✅ Found ${validatedResults.length} results`);
+    console.log(`Found ${validatedResults.length} results`);
     return validatedResults;
   } catch (error) {
-    console.error("❌ Search operation failed:", error);
+    console.error("Search operation failed:", error);
     throw error;
   }
 }
@@ -276,7 +274,7 @@ export async function getF1DocumentsByFilters(filters: {
   const { data, error } = await query;
 
   if (error) {
-    console.error("❌ Error fetching documents:", error);
+    console.error("Error fetching documents:", error);
     throw new Error(`Failed to fetch documents: ${error.message}`);
   }
 
@@ -309,7 +307,7 @@ export async function getF1Statistics(): Promise<{
   const { data, error } = await client.rpc("get_f1_statistics");
 
   if (error) {
-    console.error("❌ Error fetching statistics:", error);
+    console.error("Error fetching statistics:", error);
     throw new Error(`Failed to fetch statistics: ${error.message}`);
   }
 
@@ -333,7 +331,7 @@ export async function clearAllDocuments(): Promise<void> {
 
   const client = getSupabaseClient();
 
-  console.log("🗑️ Clearing all F1 documents...");
+  console.log("Clearing all F1 documents...");
 
   const { error } = await client
     .from("f1_documents")
@@ -341,11 +339,11 @@ export async function clearAllDocuments(): Promise<void> {
     .neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all
 
   if (error) {
-    console.error("❌ Error clearing documents:", error);
+    console.error("Error clearing documents:", error);
     throw new Error(`Failed to clear documents: ${error.message}`);
   }
 
-  console.log("✅ All documents cleared");
+  console.log("All documents cleared");
 }
 
 // Get SQL setup for Supabase
