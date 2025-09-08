@@ -51,7 +51,7 @@ async function searchF1Documents(
   threshold: number = 0.3,
 ): Promise<any[]> {
   try {
-    console.log(`🔍 Searching for: "${query}"`);
+    console.log(`Searching for: "${query}"`);
 
     // Generate embedding for the query
     const queryEmbedding = await generateEmbedding(query);
@@ -64,9 +64,9 @@ async function searchF1Documents(
     });
 
     if (error) {
-      console.error("❌ Search error:", error);
+      console.error("Search error:", error);
       // Fallback to simple text search
-      console.log("🔄 Trying fallback text search...");
+      console.log("Trying fallback text search...");
       const { data: fallbackData, error: fallbackError } = await supabase
         .from("f1_documents")
         .select("*")
@@ -76,15 +76,15 @@ async function searchF1Documents(
         .limit(limit);
 
       if (fallbackError) {
-        console.error("❌ Fallback search error:", fallbackError);
+        console.error("Fallback search error:", fallbackError);
         return [];
       }
 
-      console.log(`✅ Found ${fallbackData?.length || 0} results (fallback)`);
+      console.log(`Found ${fallbackData?.length || 0} results (fallback)`);
       return fallbackData?.map((doc) => ({ ...doc, similarity: 0.5 })) || [];
     }
 
-    console.log(`✅ Found ${data?.length || 0} results`);
+    console.log(`Found ${data?.length || 0} results`);
 
     // If no results with vector search, try fallback
     if (!data || data.length === 0) {
