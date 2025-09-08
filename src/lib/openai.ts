@@ -75,7 +75,7 @@ export async function generateEmbedding(
     });
 
     console.log(
-      `🧠 Generating embedding using ${bedrockConfig.embeddingModel}...`,
+      `Generating embedding using ${bedrockConfig.embeddingModel}...`,
     );
 
     let modelBody: any;
@@ -137,11 +137,11 @@ export async function generateEmbedding(
     };
 
     const validatedResponse = EmbeddingResponseSchema.parse(result);
-    console.log(`✅ Generated ${embedding.length}-dimensional embedding`);
+    console.log(`Generated ${embedding.length}-dimensional embedding`);
 
     return validatedResponse;
   } catch (error) {
-    console.error("❌ Embedding generation failed:", error);
+    console.error("Embedding generation failed:", error);
 
     if (error instanceof z.ZodError) {
       throw new Error(
@@ -173,7 +173,7 @@ export async function generateResponse(
 
     const model = validatedRequest.model || bedrockConfig.chatModel;
 
-    console.log(`💬 Generating response using ${model}...`);
+    console.log(`Generating response using ${model}...`);
 
     // Prepare the prompt
     const systemPrompt = `You are an expert Formula 1 analyst with comprehensive knowledge of F1 racing, drivers, teams, regulations, and history.
@@ -248,10 +248,10 @@ ${userPrompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
       throw new Error("Invalid response format from chat model");
     }
 
-    console.log(`✅ Generated response (${generatedText.length} characters)`);
+    console.log(`Generated response (${generatedText.length} characters)`);
     return generatedText.trim();
   } catch (error) {
-    console.error("❌ Chat generation failed:", error);
+    console.error("Chat generation failed:", error);
 
     if (error instanceof z.ZodError) {
       throw new Error(
@@ -278,7 +278,7 @@ export async function generateBatchEmbeddings(
   }
 
   console.log(
-    `🔄 Generating embeddings for ${texts.length} texts in batches of ${batchSize}...`,
+    `Generating embeddings for ${texts.length} texts in batches of ${batchSize}...`,
   );
 
   const results: EmbeddingResponse[] = [];
@@ -299,7 +299,7 @@ export async function generateBatchEmbeddings(
       } catch (error) {
         const errorMsg = `Text ${i + index}: ${error instanceof Error ? error.message : String(error)}`;
         errors.push(errorMsg);
-        console.warn(`⚠️ ${errorMsg}`);
+        console.warn(`${errorMsg}`);
         return null;
       }
     });
@@ -318,11 +318,11 @@ export async function generateBatchEmbeddings(
   }
 
   if (errors.length > 0) {
-    console.warn(`⚠️ ${errors.length} embeddings failed:`, errors);
+    console.warn(`${errors.length} embeddings failed:`, errors);
   }
 
   console.log(
-    `✅ Successfully generated ${results.length}/${texts.length} embeddings`,
+    `Successfully generated ${results.length}/${texts.length} embeddings`,
   );
   return results;
 }
@@ -347,7 +347,7 @@ export async function testBedrockConnection(): Promise<{
   };
 
   try {
-    console.log("🔍 Testing Bedrock connection...");
+    console.log("Testing Bedrock connection...");
 
     // Test embedding generation
     try {
@@ -355,9 +355,9 @@ export async function testBedrockConnection(): Promise<{
         "Test embedding generation",
       );
       details.embeddingTest = embeddingResult.data[0].embedding.length > 0;
-      console.log("✅ Embedding test passed");
+      console.log("Embedding test passed");
     } catch (error) {
-      console.warn("⚠️ Embedding test failed:", error);
+      console.warn("Embedding test failed:", error);
       details.error = `Embedding: ${error instanceof Error ? error.message : String(error)}`;
     }
 
@@ -367,9 +367,9 @@ export async function testBedrockConnection(): Promise<{
         maxTokens: 50,
       });
       details.chatTest = chatResult.length > 0;
-      console.log("✅ Chat test passed");
+      console.log("Chat test passed");
     } catch (error) {
-      console.warn("⚠️ Chat test failed:", error);
+      console.warn("Chat test failed:", error);
       const chatError = `Chat: ${error instanceof Error ? error.message : String(error)}`;
       details.error = details.error
         ? `${details.error}; ${chatError}`
@@ -379,7 +379,7 @@ export async function testBedrockConnection(): Promise<{
     const status =
       details.embeddingTest && details.chatTest ? "healthy" : "unhealthy";
     console.log(
-      `${status === "healthy" ? "✅" : "❌"} Bedrock connection test ${status}`,
+      `${status === "healthy" ? "PASS" : "FAIL"} Bedrock connection test ${status}`,
     );
 
     return { status, details };
