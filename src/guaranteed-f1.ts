@@ -321,12 +321,12 @@ async function processCSVFile(
 
     if (csvData.length === 0) {
       const error = `No valid data found in ${fileConfig.filename}`;
-      console.log(`   ⚠️ ${error}`);
+      console.log(`   ${error}`);
       stats.errors.push(error);
       return { documents: [], stats };
     }
 
-    console.log(`   🔄 Processing ${csvData.length} rows...`);
+    console.log(`   Processing ${csvData.length} rows...`);
 
     const documents: F1Document[] = [];
 
@@ -384,24 +384,24 @@ async function processCSVFile(
           stats.invalidDocuments++;
           const error = `Row ${i + 1}: ${validationResult.error.errors.map((e) => e.message).join(", ")}`;
           stats.errors.push(error);
-          console.warn(`   ⚠️ ${error}`);
+          console.warn(`   ${error}`);
         }
       } catch (error) {
         stats.invalidDocuments++;
         const errorMsg = `Row ${i + 1}: ${error instanceof Error ? error.message : String(error)}`;
         stats.errors.push(errorMsg);
-        console.warn(`   ⚠️ ${errorMsg}`);
+        console.warn(`   ${errorMsg}`);
       }
     }
 
     console.log(
-      `   ✅ Processed: ${stats.validDocuments} valid, ${stats.invalidDocuments} invalid documents`,
+      `   Processed: ${stats.validDocuments} valid, ${stats.invalidDocuments} invalid documents`,
     );
 
     return { documents, stats };
   } catch (error) {
     const errorMsg = `Failed to process ${fileConfig.filename}: ${error instanceof Error ? error.message : String(error)}`;
-    console.error(`   ❌ ${errorMsg}`);
+    console.error(`   ${errorMsg}`);
     stats.errors.push(errorMsg);
     return { documents: [], stats };
   }
@@ -414,8 +414,8 @@ async function guaranteedF1Ingestion(
   const startTime = Date.now();
   const options = IngestionOptionsSchema.parse(userOptions);
 
-  console.log("🚀 GUARANTEED F1 INGESTION - STARTING...\n");
-  console.log("📋 Configuration:");
+  console.log("GUARANTEED F1 INGESTION - STARTING...\n");
+  console.log("Configuration:");
   console.log(`   Max rows per file: ${options.maxRowsPerFile}`);
   console.log(`   Batch size: ${options.batchSize}`);
   console.log(`   Validate only: ${options.validateOnly}`);
@@ -437,10 +437,10 @@ async function guaranteedF1Ingestion(
 
   try {
     // Initialize database
-    console.log("🗄️ Initializing database...");
+    console.log("Initializing database...");
     const db = getDatabase();
     await db.initialize();
-    console.log(`✅ Database initialized: ${db.getProviderName()}\n`);
+    console.log(`Database initialized: ${db.getProviderName()}\n`);
 
     // Filter files based on priority and options
     const filesToProcess = options.includeAllFiles
@@ -448,7 +448,7 @@ async function guaranteedF1Ingestion(
       : CSV_FILES.filter((file) => file.priority <= options.priorityThreshold);
 
     console.log(
-      `📁 Processing ${filesToProcess.length} files (priority ≤ ${options.priorityThreshold}):\n`,
+      `Processing ${filesToProcess.length} files (priority ≤ ${options.priorityThreshold}):\n`,
     );
 
     const allDocuments: F1Document[] = [];
@@ -475,13 +475,13 @@ async function guaranteedF1Ingestion(
     }
 
     if (allDocuments.length === 0) {
-      console.log("❌ No valid documents to process");
+      console.log("No valid documents to process");
       stats.processingTime = Date.now() - startTime;
       return stats;
     }
 
     console.log(
-      `\n🧠 Generating embeddings for ${allDocuments.length} documents...`,
+      `\nGenerating embeddings for ${allDocuments.length} documents...`,
     );
 
     if (options.validateOnly) {
@@ -504,7 +504,7 @@ async function guaranteedF1Ingestion(
 
     if (embeddingResults.length !== allDocuments.length) {
       const warning = `Embedding count mismatch: ${embeddingResults.length} embeddings for ${allDocuments.length} documents`;
-      console.warn(`⚠️ ${warning}`);
+      console.warn(`${warning}`);
       stats.warnings.push(warning);
     }
 
@@ -525,13 +525,13 @@ async function guaranteedF1Ingestion(
         });
       } else {
         const warning = `Missing embedding for document ${i}`;
-        console.warn(`⚠️ ${warning}`);
+        console.warn(`${warning}`);
         stats.warnings.push(warning);
       }
     }
 
     console.log(
-      `\n💾 Inserting ${documentsWithEmbeddings.length} documents into database...`,
+      `\nInserting ${documentsWithEmbeddings.length} documents into database...`,
     );
 
     // Insert documents in batches
@@ -543,11 +543,11 @@ async function guaranteedF1Ingestion(
         await db.insertDocuments(batch);
         stats.documentsInserted += batch.length;
         console.log(
-          `   ✅ Inserted batch ${Math.floor(i / insertBatchSize) + 1}/${Math.ceil(documentsWithEmbeddings.length / insertBatchSize)} (${batch.length} documents)`,
+          `   Inserted batch ${Math.floor(i / insertBatchSize) + 1}/${Math.ceil(documentsWithEmbeddings.length / insertBatchSize)} (${batch.length} documents)`,
         );
       } catch (error) {
         const errorMsg = `Batch ${Math.floor(i / insertBatchSize) + 1} insertion failed: ${error instanceof Error ? error.message : String(error)}`;
-        console.error(`   ❌ ${errorMsg}`);
+        console.error(`   ${errorMsg}`);
         stats.errors.push(errorMsg);
       }
 
@@ -560,8 +560,8 @@ async function guaranteedF1Ingestion(
     }
 
     // Generate summary
-    console.log("\n🎉 INGESTION COMPLETE!");
-    console.log("\n📊 Summary:");
+    console.log("\nINGESTION COMPLETE!");
+    console.log("\nSummary:");
     console.log(`   Files processed: ${stats.filesProcessed}`);
     console.log(`   Total rows: ${stats.totalRows}`);
     console.log(`   Valid documents: ${stats.validDocuments}`);
@@ -573,7 +573,7 @@ async function guaranteedF1Ingestion(
     );
 
     if (stats.warnings.length > 0) {
-      console.log(`\n⚠️ Warnings (${stats.warnings.length}):`);
+      console.log(`\nWarnings (${stats.warnings.length}):`);
       stats.warnings
         .slice(0, 5)
         .forEach((warning) => console.log(`   - ${warning}`));
@@ -583,7 +583,7 @@ async function guaranteedF1Ingestion(
     }
 
     if (stats.errors.length > 0) {
-      console.log(`\n❌ Errors (${stats.errors.length}):`);
+      console.log(`\nErrors (${stats.errors.length}):`);
       stats.errors.slice(0, 5).forEach((error) => console.log(`   - ${error}`));
       if (stats.errors.length > 5) {
         console.log(`   ... and ${stats.errors.length - 5} more`);
@@ -603,8 +603,8 @@ async function guaranteedF1Ingestion(
       JSON.stringify(backupData, null, 2),
     );
 
-    console.log("\n💾 Ingestion log saved: f1-ingestion-log.json");
-    console.log("\n🏎️ Your F1 system is ready! Try:");
+    console.log("\nIngestion log saved: f1-ingestion-log.json");
+    console.log("\nYour F1 system is ready! Try:");
     console.log("   npm run team-analysis");
     console.log("   npm run answer");
     console.log("   cd ui && npm run dev");
@@ -613,7 +613,7 @@ async function guaranteedF1Ingestion(
     return stats;
   } catch (error) {
     const errorMsg = `Ingestion failed: ${error instanceof Error ? error.message : String(error)}`;
-    console.error(`\n❌ ${errorMsg}`);
+    console.error(`\n${errorMsg}`);
     stats.errors.push(errorMsg);
     stats.processingTime = Date.now() - startTime;
     return stats;
