@@ -71,8 +71,8 @@ Ask these questions in the UI:
 - Copy ALL content from `setup.sql`
 
 ### AWS Model Issues
-- Your embeddings are working ✅
-- Chat model updated to Claude Haiku ✅
+- Your embeddings are working
+- Chat model updated to Claude Haiku
 - Should work after database setup
 
 ## SQL Setup Checklist
@@ -88,7 +88,7 @@ When you run `setup.sql`, it will:
 ## Success Indicators
 
 You'll know it's working when:
-1. `npm run check-setup` shows all green ✅
+1. `npm run check-setup` shows all green checkmarks
 2. `npm run ingest` completes without errors
 3. UI loads at localhost:3000
 4. You can ask F1 questions and get responses with sources
