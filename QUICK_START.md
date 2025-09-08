@@ -1,6 +1,6 @@
 # Quick Start Guide - F1 RAG AI Cloud
 
-## 🚀 5-Minute Setup
+## 5-Minute Setup
 
 Your Supabase connection is working! Just need to complete these final steps:
 
@@ -36,7 +36,7 @@ Your Supabase connection is working! Just need to complete these final steps:
 npm run check-setup
 ```
 
-Should show all green checkmarks ✅
+Should show all green checkmarks
 
 ### Step 4: Load F1 Data (1 minute)
 
@@ -54,19 +54,19 @@ cd ui && npm run dev
 
 Open http://localhost:3000 and ask: "Who won the 2024 F1 championship?"
 
-## 🎯 What's Working Now
+## What's Working Now
 
-✅ **Supabase**: Connected and configured  
-✅ **Environment**: Properly set up  
-✅ **Dependencies**: All installed  
-✅ **Data Files**: F1 CSV files ready  
+**Supabase**: Connected and configured  
+**Environment**: Properly set up  
+**Dependencies**: All installed  
+**Data Files**: F1 CSV files ready  
 
-## ❌ What's Missing
+## What's Missing
 
 - [ ] Database tables (run setup.sql)
 - [ ] AWS credentials (update .env)
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### "Could not find table f1_documents"
 - Run the SQL setup in Supabase dashboard
@@ -77,7 +77,7 @@ Open http://localhost:3000 and ask: "Who won the 2024 F1 championship?"
 ### "No F1 data found"
 - Run `npm run ingest` after AWS setup
 
-## 🆘 Need Help?
+## Need Help?
 
 Run diagnostics:
 ```bash
