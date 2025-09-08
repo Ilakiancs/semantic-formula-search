@@ -327,7 +327,7 @@ async function analyzeDriverTrends(
       insights.push("Declining performance trend");
       recommendations.push("Analyze factors contributing to performance drop");
     } else {
-      insights.push("➡️ Consistent performance level");
+      insights.push("Consistent performance level");
       recommendations.push("Look for incremental improvement opportunities");
     }
   }
@@ -598,13 +598,11 @@ async function runF1Analytics(): Promise<void> {
     displayReport(seasonComparison);
 
     console.log("\nF1 Analytics Complete!");
-    console.log(
-      "✅ All analytical features working with real Supabase F1 data",
-    );
-    console.log("✅ Vector search and embeddings functioning correctly");
-    console.log("✅ Advanced performance comparisons generated");
+    console.log("All analytical features working with real Supabase F1 data");
+    console.log("Vector search and embeddings functioning correctly");
+    console.log("Advanced performance comparisons generated");
   } catch (error) {
-    console.error("❌ Analytics error:", error);
+    console.error("Analytics error:", error);
   }
 }
 
