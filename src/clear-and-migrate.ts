@@ -11,7 +11,7 @@ const supabase = createClient(
 
 interface ClearResult {
   component: string;
-  status: "✅ Success" | "⚠️ Warning" | "❌ Error";
+  status: "Success" | "Warning" | "Error";
   details: string;
   count?: number;
 }
@@ -19,7 +19,7 @@ interface ClearResult {
 // Clear all existing F1 documents
 async function clearF1Documents(): Promise<ClearResult> {
   try {
-    console.log("🗄️ Clearing existing F1 documents...");
+    console.log("Clearing existing F1 documents...");
 
     // First, get count of existing documents
     const { count: currentCount, error: countError } = await supabase
@@ -29,17 +29,17 @@ async function clearF1Documents(): Promise<ClearResult> {
     if (countError) {
       return {
         component: "Document Count",
-        status: "❌ Error",
+        status: "Error",
         details: `Failed to count documents: ${countError.message}`,
       };
     }
 
-    console.log(`📊 Found ${currentCount || 0} existing documents`);
+    console.log(`Found ${currentCount || 0} existing documents`);
 
     if (currentCount === 0) {
       return {
         component: "Clear Documents",
-        status: "✅ Success",
+        status: "Success",
         details: "Database already empty",
         count: 0,
       };
@@ -54,7 +54,7 @@ async function clearF1Documents(): Promise<ClearResult> {
     if (deleteError) {
       return {
         component: "Clear Documents",
-        status: "❌ Error",
+        status: "Error",
         details: `Failed to delete documents: ${deleteError.message}`,
       };
     }
@@ -67,7 +67,7 @@ async function clearF1Documents(): Promise<ClearResult> {
     if (verifyError) {
       return {
         component: "Clear Documents",
-        status: "⚠️ Warning",
+        status: "Warning",
         details: `Documents deleted but verification failed: ${verifyError.message}`,
         count: currentCount,
       };
@@ -75,15 +75,14 @@ async function clearF1Documents(): Promise<ClearResult> {
 
     return {
       component: "Clear Documents",
-      status: "✅ Success",
+      status: "Success",
       details: `Successfully cleared ${currentCount} documents`,
       count: currentCount,
     };
-
   } catch (error) {
     return {
       component: "Clear Documents",
-      status: "❌ Error",
+      status: "Error",
       details: `Unexpected error: ${error}`,
     };
   }
@@ -92,7 +91,7 @@ async function clearF1Documents(): Promise<ClearResult> {
 // Test database connection and table structure
 async function testDatabaseConnection(): Promise<ClearResult> {
   try {
-    console.log("🔍 Testing database connection...");
+    console.log("Testing database connection...");
 
     // Test basic connection
     const { data, error } = await supabase
@@ -103,33 +102,32 @@ async function testDatabaseConnection(): Promise<ClearResult> {
     if (error) {
       return {
         component: "Database Connection",
-        status: "❌ Error",
+        status: "Error",
         details: `Connection failed: ${error.message}`,
       };
     }
 
     // Test if required functions exist
-    const { data: statsData, error: statsError } = await supabase
-      .rpc("get_f1_statistics");
+    const { data: statsData, error: statsError } =
+      await supabase.rpc("get_f1_statistics");
 
     if (statsError) {
       return {
         component: "Database Connection",
-        status: "⚠️ Warning",
+        status: "Warning",
         details: "Connection OK but statistics function missing",
       };
     }
 
     return {
       component: "Database Connection",
-      status: "✅ Success",
+      status: "Success",
       details: "Database connection and functions verified",
     };
-
   } catch (error) {
     return {
       component: "Database Connection",
-      status: "❌ Error",
+      status: "Error",
       details: `Unexpected error: ${error}`,
     };
   }
@@ -138,54 +136,55 @@ async function testDatabaseConnection(): Promise<ClearResult> {
 // Verify JSON files are available
 async function verifyJSONFiles(): Promise<ClearResult> {
   try {
-    console.log("📁 Verifying JSON files...");
+    console.log("Verifying JSON files...");
 
-    const fs = require('fs');
-    const path = require('path');
+    const fs = require("fs");
+    const path = require("path");
 
-    const datasetPath = path.join(process.cwd(), 'formula1-datasets');
+    const datasetPath = path.join(process.cwd(), "formula1-datasets");
 
     if (!fs.existsSync(datasetPath)) {
       return {
         component: "JSON Files",
-        status: "❌ Error",
+        status: "Error",
         details: "formula1-datasets directory not found",
       };
     }
 
-    const files = fs.readdirSync(datasetPath).filter((file: string) => file.endsWith('.json'));
+    const files = fs
+      .readdirSync(datasetPath)
+      .filter((file: string) => file.endsWith(".json"));
 
     if (files.length === 0) {
       return {
         component: "JSON Files",
-        status: "❌ Error",
+        status: "Error",
         details: "No JSON files found in formula1-datasets directory",
       };
     }
 
     // Check some key files
     const keyFiles = [
-      'Formula1_2024season_drivers.json',
-      'Formula1_2024season_teams.json',
-      'Formula1_2024season_raceResults.json',
-      'Formula1_2023season_drivers.json',
-      'Formula1_2023season_teams.json',
-      'Formula1_2023season_raceResults.json',
+      "Formula1_2024season_drivers.json",
+      "Formula1_2024season_teams.json",
+      "Formula1_2024season_raceResults.json",
+      "Formula1_2023season_drivers.json",
+      "Formula1_2023season_teams.json",
+      "Formula1_2023season_raceResults.json",
     ];
 
-    const foundKeyFiles = keyFiles.filter(file => files.includes(file));
+    const foundKeyFiles = keyFiles.filter((file) => files.includes(file));
 
     return {
       component: "JSON Files",
-      status: "✅ Success",
+      status: "Success",
       details: `Found ${files.length} JSON files (${foundKeyFiles.length}/${keyFiles.length} key files)`,
       count: files.length,
     };
-
   } catch (error) {
     return {
       component: "JSON Files",
-      status: "❌ Error",
+      status: "Error",
       details: `Error checking files: ${error}`,
     };
   }
@@ -193,8 +192,8 @@ async function verifyJSONFiles(): Promise<ClearResult> {
 
 // Display results
 function displayResults(results: ClearResult[]): void {
-  console.log("\n🏎️ CLEAR AND MIGRATE RESULTS");
-  console.log("=" .repeat(50));
+  console.log("\nCLEAR AND MIGRATE RESULTS");
+  console.log("=".repeat(50));
 
   results.forEach((result) => {
     console.log(`\n${result.status} ${result.component}`);
@@ -204,26 +203,26 @@ function displayResults(results: ClearResult[]): void {
     }
   });
 
-  const successCount = results.filter(r => r.status === "✅ Success").length;
+  const successCount = results.filter((r) => r.status === "Success").length;
   const totalCount = results.length;
 
   console.log("\n" + "=".repeat(50));
-  console.log(`📊 OVERALL: ${successCount}/${totalCount} operations successful`);
+  console.log(`OVERALL: ${successCount}/${totalCount} operations successful`);
 
   if (successCount === totalCount) {
-    console.log("🎉 READY FOR JSON MIGRATION");
-    console.log("\n💡 Next steps:");
+    console.log("READY FOR JSON MIGRATION");
+    console.log("\nNext steps:");
     console.log("   1. Run: npx ts-node src/json-ingest.ts");
     console.log("   2. Test: npx ts-node src/test-json-data.ts");
     console.log("   3. Verify: npm run check-setup");
   } else {
-    console.log("⚠️ ISSUES DETECTED - Check errors above");
+    console.log("ISSUES DETECTED - Check errors above");
   }
 }
 
 // Main migration function
 async function clearAndMigrate(): Promise<void> {
-  console.log("🚀 F1 RAG AI - CLEAR & MIGRATE TO JSON");
+  console.log("F1 RAG AI - CLEAR & MIGRATE TO JSON");
   console.log("=====================================");
   console.log("Preparing to migrate from CSV to JSON format...\n");
 
@@ -241,9 +240,8 @@ async function clearAndMigrate(): Promise<void> {
 
     // Display results
     displayResults(results);
-
   } catch (error) {
-    console.error("❌ Migration preparation failed:", error);
+    console.error("Migration preparation failed:", error);
   }
 }
 
