@@ -23,7 +23,7 @@ const bedrock = new BedrockRuntimeClient({
 
 interface TestResult {
   test: string;
-  status: "✅ Pass" | "⚠️ Warning" | "❌ Fail";
+  status: "Pass" | "Warning" | "Fail";
   details: string;
   data?: any;
   count?: number;
@@ -109,21 +109,21 @@ async function testDatabaseConnectivity(): Promise<TestResult> {
     if (error) {
       return {
         test: "Database Connectivity",
-        status: "❌ Fail",
+        status: "Fail",
         details: `Connection failed: ${error.message}`,
       };
     }
 
     return {
       test: "Database Connectivity",
-      status: "✅ Pass",
+      status: "Pass",
       details: "Successfully connected to Supabase database",
       data: data?.[0] || null,
     };
   } catch (error) {
     return {
       test: "Database Connectivity",
-      status: "❌ Fail",
+      status: "Fail",
       details: `Unexpected error: ${error}`,
     };
   }
