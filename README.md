@@ -7,7 +7,6 @@ A streamlined Formula 1 RAG (Retrieval-Augmented Generation) system using AWS Be
 - **AWS Bedrock Integration**: Cohere embeddings + Claude chat models
 - **Supabase Database**: Vector storage and search capabilities
 - **Type Safety**: Zod schema validation for all operations
-- **Production Ready**: Comprehensive error handling and logging
 
 ## Quick Start
 
@@ -24,10 +23,6 @@ npm install
 
 # Set up environment variables
 cp env.template .env
-# Fill in your AWS and Supabase credentials
-
-# Verify setup
-npm run check-setup
 
 # Ingest F1 data
 npm run ingest
@@ -76,26 +71,6 @@ npm run answer
 # "Tell me about Max Verstappen's performance in 2024"
 # "Compare Red Bull vs McLaren performance"
 # "Who won the Monaco Grand Prix?"
-```
-
-## Project Structure
-
-```
-├── src/
-│   ├── lib/                    # Core utilities
-│   │   ├── config.ts          # Environment validation
-│   │   ├── schemas.ts         # Zod schemas
-│   │   ├── db.ts              # Database interface
-│   │   ├── supabase.ts        # Supabase implementation
-│   │   └── openai.ts          # AWS Bedrock integration
-│   ├── guaranteed-f1.ts       # Data ingestion
-│   ├── check-setup.ts         # Health checks
-│   ├── answer.ts              # Query interface
-│   ├── recreate-collection.ts # Database management
-│   └── simple-team-query.ts   # Team analysis
-├── ui/                        # Next.js frontend (optional)
-├── formula1-datasets/         # F1 JSON data files
-└── setup.sql                 # Database schema
 ```
 
 ## License
